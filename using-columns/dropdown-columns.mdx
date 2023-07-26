@@ -1,0 +1,171 @@
+---
+title: "Dropdown Columns"
+description: "How to add a dropdown column to your importer through code."
+---
+
+You can add a column to your importer directly through the UI of your Fuse account, or you can do so in code using the documentation below.
+
+The Dropdown column type displays a select box for the user to pick from an array of values.
+
+## addColumn Function
+
+The `addColumn` function accepts an object as an argument.
+
+- `internal_key` (String) - required: The internal key used to access a column's value.
+- label (String) - required: The user-facing column label that is shown in the interface.
+- `column_type` (String) - required: Should be "enum".
+- `required` (String) - required: Whether or not the column is required.
+- `values` (Array) - required: An array of values for the dropdown.
+- `position` (Optional): The position or order of the column.
+- `unique` (Optional): Whether values should be unique.
+- `validations` (Optional): An array of built-in data validations. See Built-in [Enum Validations](#built-in-enum-validations).
+- `transformations` (Optional): An array of built-in data transformations. See [Built-in Enum Transformations](#built-in-enum-transformations)
+
+### Example Code
+
+<Tabs>
+  <Tab title="JavaScript">
+    ```javascript
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      const values = ["Pizza", "Sushi", "Burger"];
+
+      const validations = [
+        {
+          validation_type: "unique_case_insensitive",
+          message: "Must be unique (case insensitive)",
+        },
+      ];
+
+      const transformations = [
+        {
+          transformation_type: "autodetect",
+        },
+      ];
+
+      importer.addColumn({
+        internal_key: "food_options",
+        label: "Food Options",
+        column_type: "enum",
+        required: true,
+        position: 1,
+        unique: true,
+        values: values,
+        validations: validations,
+        transformations: transformations,
+      });
+
+      importer.show();
+    ```
+
+  </Tab>
+  <Tab title="TypeScript">
+    ```typescript
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      const values = ["Pizza", "Sushi", "Burger"];
+
+      // ColumnValidations should be imported from "fuse-importer"
+      const validations: ColumnValidations<"enum">[] = [
+        {
+          validation_type: "unique_case_insensitive",
+          message: "Must be unique (case insensitive)",
+        },
+      ];
+
+      // ColumnTransformations should be imported from "fuse-importer"
+      const transformations: ColumnTransformations<"enum">[] = [
+        {
+          transformation_type: "autodetect",
+        },
+      ];
+
+      importer.addColumn({
+        internal_key: "food_options",
+        label: "Food Options",
+        column_type: "enum",
+        required: true,
+        position: 1,
+        unique: true,
+        values: values,
+        validations: validations,
+        transformations: transformations,
+      });
+
+      importer.show();
+    ```
+
+  </Tab>
+</Tabs>
+
+## Built-in Enum Validations
+
+The options property of `addColumn` accepts an array of validations. For the Enum validation, you can specify two properties:
+
+- `validation_type:` the name of the validation
+- `message:` the message showed to the end user if the validation fails
+
+The validations property accepts an array of objects that contains these possible values: `validation_type`, `message`. As the example below:
+
+```javascript
+validations: [
+  {
+    validation_type: "unique_case_sensitive",
+    message: "Must be unique (case sensitive)",
+  },
+];
+```
+
+### unique_case_sensitive
+
+Specifies that the value must be unique using case-sensitive comparison.
+
+```javascript
+validations: [
+  {
+    validation_type: "unique_case_sensitive",
+    message: "Must be unique (case sensitive)",
+  },
+];
+```
+
+### unique_case_insensitive
+
+Specifies that the value must be unique using case-insensitive comparison.
+
+```javascript
+validations: [
+  {
+    validation_type: "unique_case_insensitive",
+    message: "Must be unique (case insensitive)",
+  },
+];
+```
+
+## Built-in Enum Transformations
+
+The options property of `addColumn` accepts an array of transformations. For the time transformations, you can specify one property:
+
+- `transformation_type:` the name of the transformation
+
+The transformations property accepts an array of objects that contains these possible values: `transformation_type`. As the example below:
+
+```javascript
+transformations: [
+  {
+    transformation_type: "autodetect",
+  },
+];
+```
+
+### autodetect
+
+The autodetect transformation analyzes the values in the column and automatically converts them to a more meaningful representation. For example, it can convert numerical values like 0 and 1 to boolean values like true and false.
+
+```javascript
+transformations: [
+  {
+    transformation_type: "autodetect",
+  },
+];
+```

@@ -1,0 +1,17 @@
+---
+title: "Launching an Importer"
+description: "How to display the importer."
+---
+
+You can launch the importer using the `show` function. Typically, you will want to connect this function to a button on your website.
+
+## `show`
+
+The `show` function does exactly what it sounds like; it displays the importer. Ensure you have initialized the importer properly beforehand. Use this function like so:
+
+```javascript
+const importer = new FuseImporter(organizationApiKey, importerId);
+// ....
+
+importer.show();
+```

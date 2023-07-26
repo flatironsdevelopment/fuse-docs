@@ -1,0 +1,47 @@
+---
+title: "Angular CSV Importer"
+description: "How to implement an Angular CSV Importer"
+---
+
+Below is some sample Angular code to get you started with our CSV Importer. Be sure to insert your own Organization's API key and an Importer ID from your account. You can find them on the [Importers](https://fuse.flatirons.com/account/importers) page.
+
+```typescript
+import { Component } from "@angular/core";
+import FuseImporter from "fuse-importer";
+
+@Component({
+  selector: "app-root",
+  template: '<button (click)="showImporter()">Show Importer</button>',
+})
+export class AppComponent {
+  public showImporter() {
+    const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
+    const templateId = "YOUR TEMPLATE ID";
+
+    if (
+      organizationApiKey.indexOf("YOUR") !== -1 ||
+      templateId.indexOf("YOUR") !== -1
+    ) {
+      window.confirm(
+        "You need to configure your organization api key and template id."
+      );
+      return;
+    }
+
+    const importer = new FuseImporter(organizationApiKey, templateId);
+
+    importer.onSubmit = async (records) => {
+      return {
+        message: "Data imported successfully",
+        errors: {},
+      };
+    };
+
+    importer.onValidateRecord = async (record) => {
+      return { errors: {}, warnings: {} };
+    };
+
+    importer.show();
+  }
+}
+```

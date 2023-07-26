@@ -1,0 +1,59 @@
+---
+title: "Installation"
+description: "Install our NPM package on your website."
+---
+
+You can install the importer using Yarn, NPM, or a CDN. Note that the benefit of the CDN is that you can automatically get updates as we release new versions of the importer.
+
+<Tabs>
+  <Tab title="YARN">
+    If you are installing Fuse Importer in a React-based project, do:
+
+    ```bash
+    yarn add fuse-importer
+    ```
+
+    If your project does not have
+
+    ```bash
+    yarn add fuse-importer react react-dom
+    ```
+
+    To import the data importer, use:
+
+    ```typescript
+    import FuseImporter from "fuse-importer";
+    ```
+
+  </Tab>
+  <Tab title="NPM">
+    If you are installing Fuse Importer in a React-based project, do:
+
+    ```bash
+    npm install fuse-importer --save
+    ```
+
+    If you are installing Fuse Importer in a Vue or Angular-based project, do:
+
+    ```bash
+    npm install fuse-importer react react-dom --save
+    ```
+
+    To import the data importer, use:
+
+    ```typescript
+    import FuseImporter from "fuse-importer";
+    ```
+
+  </Tab>
+  <Tab title="CDN">
+    If you're not using a module bundler or package manager, Fuse is also hosted on the [unpkg.com](https://unpkg.com/) CDN.
+
+    Make sure to place the script tag before you initialize the importer.
+
+    ```html
+    <script type="text/javascript" src="https://unpkg.com/fuse-importer@latest"></script>
+    ```
+
+  </Tab>
+</Tabs>

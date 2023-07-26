@@ -1,0 +1,211 @@
+---
+title: "DateTime Columns"
+description: "How to add a datetime column to your importer through code."
+---
+
+You can add a column to your importer directly through the UI of your Fuse account, or you can do so in code using the documentation below.
+
+The DateTime column type validates that values are a specific DateTime format.
+
+## addColumn Function
+
+The `addColumn` function accepts an object as an argument.
+
+- `internal_key` (String) - required: The internal key used to access a column's value.
+- `label` (String) - required: The user-facing column label that is shown in the interface.
+- `column_type` (String) - required: Should be "datetime".
+- `required` (String) - required: Whether or not the column is required.
+- `pattern` (String) - required: must be `MM/dd/yyyy HH:mm` or `MM/dd/yyyy HH:mm:ss`. We will be adding new date formats shortly, please reach out if you need them.
+- `position` (Optional): The position or order of the column.
+- `unique` (Optional): Whether values should be unique.
+- `validations` (Optional): An array of built-in data validations. See [Built-in DateTime Validations](#built-in-date-validations).
+- `transformations` (Optional): An array of built-in data transformations. See [Built-in DateTime Transformations](#built-in-date-validations).
+
+### Example Code
+
+<Tabs>
+  <Tab title="JavaScript">
+    ```javascript
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      const validations = [
+        {
+          validation_type: "before_date",
+          message: "Must be before 01/01/2023"
+          options: {
+            max: "2023-01-01T00:00:00.000Z"
+          }
+        }
+      ];
+
+      const transformations = [
+        {
+          transformation_type: "autoformat",
+        }
+      ];
+
+      importer.addColumn({
+        internal_key: "datetime",
+        label: "Date and Time",
+        column_type: "datetime",
+        pattern: "MM/dd/yyyy HH:mm:ss",
+        required: true,
+        position: 1,
+        unique: true,
+        validations: validations,
+        transformations: transformations
+      });
+
+      importer.show();
+    ```
+
+  </Tab>
+  <Tab title="TypeScript">
+    ```typescript
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      // ColumnValidations should be imported from "fuse-importer"
+      const validations: ColumnValidations<"datetime">[] = [
+        {
+          validation_type: "before_date",
+          message: "Must be before 01/01/2023",
+          options: {
+            max: "2023-01-01T00:00:00.000Z",
+          },
+        },
+      ];
+
+      // ColumnTransformations should be imported from "fuse-importer"
+      const transformations: ColumnTransformations<"datetime">[] = [
+        {
+          transformation_type: "autoformat",
+        },
+      ];
+
+      importer.addColumn({
+        internal_key: "datetime",
+        label: "Date and Time",
+        column_type: "datetime",
+        pattern: "MM/dd/yyyy HH:mm:ss",
+        required: true,
+        position: 1,
+        unique: true,
+        validations: validations,
+        transformations: transformations,
+      });
+
+      importer.show();
+    ```
+
+  </Tab>
+</Tabs>
+
+## Built-in DateTime Validations
+
+The options property of `addColumn` accepts an array of validations. Each validation has three properties:
+
+- `validation_type:` the name of the validation
+- `message:` the message showed to the end user if the validation fails
+- `options:` options for the specific validation type
+
+The validations property accepts an array of objects that contains these possible values: `validation_type`, `message` and `options`. As the example below:
+
+##
+
+```javascript
+validations: [
+  {
+    validation_type: "before_date",
+    message: "Must be before 01/01/2023"
+    options: {
+      max: "2023-01-01T00:00:00.000Z"
+    }
+  }
+]
+```
+
+### before_date
+
+Specifies that the value must be before a certain date.
+
+```javascript
+validations: [
+  {
+    validation_type: "before_date",
+    message: "Must be before 01/01/2023"
+    options: {
+      max: "2023-01-01T00:00:00.000Z"
+    }
+  }
+]
+```
+
+### after_date
+
+Specifies that the value must be after a certain date.
+
+```javascript
+validations: [
+  {
+    validation_type: "after_date",
+    message: "Must be after 01/01/2023",
+    options: {
+      min: "2023-01-01T00:00:00.000Z",
+    },
+  },
+];
+```
+
+### unique_case_sensitive
+
+Specifies that the value must be unique using case-sensitive comparison.
+
+```javascript
+validations: [
+  {
+    validation_type: "unique_case_sensitive",
+    message: "Must be unique (case sensitive)",
+  },
+];
+```
+
+### unique_case_insensitive
+
+Specifies that the value must be unique using case-insensitive comparison.
+
+```javascript
+validations: [
+  {
+    validation_type: "unique_case_insensitive",
+    message: "Must be unique (case insensitive)",
+  },
+];
+```
+
+## Built-in DateTime Transformations
+
+The options property of `addColumn` accepts an array of transformations. For the datetime transformations, you can specify one property:
+
+- `transformation_type:` the name of the transformation
+
+The transformations property accepts an array of objects that contains these possible values: `transformation_type`. As the example below:
+
+```javascript
+transformations: [
+  {
+    transformation_type: "autoformat",
+  },
+];
+```
+
+### autoformat
+
+The autoformat transformation automatically transforms the date in the column to a standardized format specified by the `pattern` on the column.
+
+```javascript
+transformations: [
+  {
+    transformation_type: "autoformat",
+  },
+];
+```

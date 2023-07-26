@@ -1,0 +1,231 @@
+---
+title: "Float Columns"
+description: "How to add a float column to your importer through code."
+---
+
+You can add a column to your importer directly through the UI of your Fuse account, or you can do so in code using the documentation below.
+
+The Float column type can accept whole integers and decimals. It supports functionalities such as:
+
+- Validate that input is greater than or less than a certain number
+- Round values to the nearest integer
+
+## addColumn Function
+
+The `addColumn` function accepts an object as an argument.
+
+- `internal_key` (String) - required: The internal key used to access a column's value.
+- `label` (String) - required: The user-facing column label that is shown in the interface.
+- `column_type` (String) - required: Should be "float".
+- `required` (String) - required: Whether or not the column is required.
+- `position` (Optional): The position or order of the column.
+- `unique` (Optional): Whether values should be unique.
+- `validations` (Optional): An array of built-in data validations. See [Built-in Float Validations](#built-in-float-validations).
+- `transformations` (Optional): An array of built-in data transformations. See [Built-in Float Transformations](#built-in-float-transformations).
+
+### Example Code
+
+<Tabs>
+  <Tab title="JavaScript">
+    ```javascript
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      const validations = [
+        {
+          validation_type: "less_than",
+          message: "Must be less than 10",
+          options: {
+            max: 10,
+          },
+        },
+      ];
+
+      const transformations = [
+        {
+          validation_type: "number_of_decimals",
+        },
+      ];
+
+      importer.addColumn({
+        internal_key: "age",
+        label: "Age",
+        column_type: "float",
+        required: true,
+        position: 1,
+        validations: validations,
+        transformations: transformations,
+      });
+
+      importer.show();
+
+    ```
+
+  </Tab>
+  <Tab title="TypeScript">
+    ```typescript
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      // ColumnValidations should be imported from "fuse-importer"
+      const validations: ColumnValidations<"float">[] = [
+        {
+          validation_type: "less_than",
+          message: "Must be less than 10",
+          options: {
+            max: 10,
+          },
+        },
+      ];
+
+      // ColumnTransformations should be imported from "fuse-importer"
+      const transformations: ColumnTransformations<"float">[] = [
+        {
+          validation_type: "number_of_decimals",
+        },
+      ];
+
+      importer.addColumn({
+        internal_key: "age",
+        label: "Age",
+        column_type: "float",
+        required: true,
+        position: 1,
+        validations: validations,
+        transformations: transformations,
+      });
+
+      importer.show();
+    ```
+
+  </Tab>
+</Tabs>
+
+## Built-in Float Validations
+
+The `addColumn` object accepts an array of validations. Each validation has three properties:
+
+- `validation_type:` the name of the validation
+- `message:` the message showed to the end user if the validation fails
+- `options:` options for the specific validation type
+
+The validations property accepts an array of objects that contains these possible values: `validation_type`, `message` and `options`. As the example below:
+
+```javascript
+validations: [
+  {
+    validation_type: "less_than",
+    message: "Must be less than 10",
+    options: {
+      max: 10,
+    },
+  },
+];
+```
+
+### less_than
+
+Specifies that the value must be less than a certain number.
+
+```javascript
+validations: [
+  {
+    validation_type: "less_than",
+    message: "Must be less than 10",
+    options: {
+      max: 10,
+    },
+  },
+];
+```
+
+### greater_than
+
+Specifies that the value must be greater than a certain number.
+
+```javascript
+validations: [
+  {
+    validation_type: "greater_than",
+    message: "Must be greater than 10",
+    options: {
+      min: 10,
+    },
+  },
+];
+```
+
+### even
+
+Specifies that the value must be even.
+
+```javascript
+validations: [
+  {
+    validation_type: "even",
+    message: "Must be an even number",
+  },
+];
+```
+
+### odd
+
+Specifies that the value must be odd.
+
+```javascript
+validations: [
+  {
+    validation_type: "odd",
+    message: "Must be an odd number",
+  },
+];
+```
+
+### regex
+
+Specifies that the value must match a regex
+
+```javascript
+validations: [
+  {
+    validation_type: "regex",
+    message: "Must not have a leading zero",
+    options: {
+      pattern: /^([+-]?[1-9]\d*|0)$/,
+    },
+  },
+];
+```
+
+## Built-in Float Transformations
+
+The options property of `addColumn` accepts an array of transformations. Each transformation has two possible properties:
+
+- `transformation_type:` the name of the transformation
+- `options:` options for the specific transformation type
+
+The transformations property accepts an array of objects that contains these possible values: `transformation_type` and `options`. As the example below:
+
+```javascript
+transformations: [
+  {
+    transformation_type: "number_of_decimals",
+    options: {
+      number_of_decimals: 2,
+    },
+  },
+];
+```
+
+### number_of_decimals
+
+This transformation allows you to specify the desired number of decimal places for the float values in the column. For example, if the original value is 3.14159 and you specify 2 decimal places, it becomes 3.14. You should pass an `options` object to the transformation object with a `number_of_decimals` integer value in your desired format.
+
+```javascript
+transformations: [
+  {
+    transformation_type: "number_of_decimals",
+    options: {
+      number_of_decimals: 2,
+    },
+  },
+];
+```

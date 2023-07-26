@@ -1,0 +1,54 @@
+---
+title: "Vue.js CSV Importer"
+description: "How to implement a Vue.js CSV Importer."
+---
+
+Below is some sample Vue.js code to get you started with our CSV Importer. Be sure to insert your own Organization's API key and an Importer ID from your account. You can find them on the [Importers](https://fuse.flatirons.com/account/importers) page of your account.
+
+```html
+<script>
+  import FuseImporter from "fuse-importer";
+
+  export default {
+    data() {
+      return {};
+    },
+    methods: {
+      showImporter() {
+        const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
+        const templateId = "YOUR TEMPLATE ID";
+
+        if (
+          organizationApiKey.indexOf("YOUR") !== -1 ||
+          templateId.indexOf("YOUR") !== -1
+        ) {
+          window.confirm(
+            "You need to configure your organization api key and template id."
+          );
+          return;
+        }
+
+        const importer = new FuseImporter(organizationApiKey, templateId);
+
+        importer.onSubmit = async (records) => {
+          return {
+            message: "Data imported successfully",
+            errors: {},
+          };
+        };
+
+        importer.onValidateRecord = async (record) => {
+          return { errors: {}, warnings: {} };
+        };
+
+        importer.show();
+      },
+    },
+  };
+</script>
+<template>
+  <button @click="showImporter()">Show Importer</button>
+</template>
+
+<style></style>
+```

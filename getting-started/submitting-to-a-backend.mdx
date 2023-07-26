@@ -1,0 +1,57 @@
+---
+title: "Submitting to a Backend"
+description: "Submit data to a backend, and display any backend errors to the user."
+---
+
+You can send data to your backend using the `onSubmit` hook.
+
+## `onSubmit(records)`
+
+This hook is called when a user submits the importer. The `records` array passed to it contains all rows in the spreadsheet.
+
+The `onSubmit` hook expects you to submit data to your backend in whatever way you want. You are passed a JS array of records, and expected to handle the submission to your API or backend from there.
+
+This function must return an object with three properties:
+
+1. `message`: (required) A success or error message to display to the user.
+2. `errors`: (required): An object that specifies which rows a backend error occurred on. Please take a look at the examples below for how to pass backend errors back to the spreadsheet UI.
+3. `recordsToDisplay`: (optional): By default, when backend errors are present, the importer will only display the records with errors. The importer assumes that all records that didn't have errors were imported successfully in your backend. There might be situations in which an error on one row prevents you from importing other rows (or, perhaps, all rows). The `recordsToDisplay` property allows you to specify which records/rows should still be shown to the user for re-import after any backend errors are fixed.
+
+## Example: Handling a Successful Backend Import
+
+If there were no backend errors, pass back an empty errors object and a message to show to the user like so:
+
+```javascript
+importer.onSubmit = async (records) => {
+  // add code to submit records to backend here
+
+  const message = "Data imported successfully";
+  return {
+    message,
+    errors: {},
+  };
+};
+```
+
+## Example: Handling Backend Errors
+
+Each record passed to the `onSubmit` hook will have a unique identifier location under `record._meta.id`. In this case of a backend validation or error occurring, you can use this identified to tell the importer to show a relevant error message for each row with an error.
+
+```javascript
+importer.onSubmit = async (records) => {
+  // add code to submit records to the backend here
+
+  const message = "Some records had errors during import. Please correct the errors and re-submit.";
+
+  return {
+    message,
+    recordsToDisplay: records // add this if you want to show all records after an error occurs
+    errors: {
+      [records[0]._meta.id]: {
+        "email": "Email is already taken. Emails must be unique.",
+        "first_name": "First Name must be capitalized."
+      }
+    }
+  };
+};
+```
