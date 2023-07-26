@@ -1,0 +1,166 @@
+---
+title: "Time Columns"
+description: "How to add a time column to your importer through code."
+---
+
+You can add a column to your importer directly through the UI of your Fuse account, or you can do so in code using the documentation below.
+
+The Time column type validates that values are a specific time format.
+
+## addColumn Function
+
+The `addColumn` function accepts an object as an argument.
+
+- `internal_key` (String) - required: The internal key used to access a column's value.
+- `label` (String) - required: The user-facing label shown in the interface.
+- `column_type` (String) - required: Should be "time".
+- `required` (String) - required: Whether or not the column is required.
+- `pattern` (String) - required: must be `HH:mm` or `HH:mm:ss`. We will be adding new time formats shortly; please reach out if you need them.
+- `position` (Optional): The position or order of the column.
+- `validations` (Optional): An array of built-in data validations. See [Built-in Time Validations](#built-in-time-validations).
+- `transformations` (Optional): An array of built-in data transformations. See [Built-in Time Transformations](#built-in-time-transformations).
+
+### Example Code
+
+<Tabs>
+  <Tab title="JavaScript">
+    ```javascript
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      const validations = [
+        {
+          validation_type: "unique_case_insensitive",
+          message: "Must be unique (case insensitive)",
+        },
+      ];
+
+      const transformations = [
+        {
+          transformation_type: "autoformat",
+        },
+      ];
+
+      importer.addColumn({
+        internal_key: "time",
+        label: "Time",
+        column_type: "time",
+        pattern: "HH:mm:ss",
+        required: true,
+        position: 1,
+        unique: true,
+        validations: validations,
+        transformations: transformations,
+      });
+
+      importer.show();
+    ```
+
+  </Tab>
+  <Tab title="TypeScript">
+    ```typescript
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      // ColumnValidations should be imported from "fuse-importer"
+      const validations: ColumnValidations<"time">[] = [
+        {
+          validation_type: "unique_case_insensitive",
+          message: "Must be unique (case insensitive)",
+        },
+      ];
+
+      // ColumnTransformations should be imported from "fuse-importer"
+      const transformations: ColumnTransformations<"time">[] = [
+        {
+          transformation_type: "autoformat",
+        },
+      ];
+
+      importer.addColumn({
+        internal_key: "time",
+        label: "Time",
+        column_type: "time",
+        pattern: "HH:mm:ss",
+        required: true,
+        position: 1,
+        unique: true,
+        validations: validations,
+        transformations: transformations,
+      });
+
+      importer.show();
+    ```
+
+  </Tab>
+</Tabs>
+
+## Built-in Time Validations
+
+The options property of `addColumn` accepts an array of validations. For the Time validation, you can specify two properties:
+
+- `validation_type:` the name of the validation
+- `message:` the message showed to the end user if the validation fails
+
+The validations property accepts an array of objects that contains these possible values: `validation_type`, `message`. As the example below:
+
+```javascript
+validations: [
+  {
+    validation_type: "unique_case_sensitive",
+    message: "Must be unique (case sensitive)",
+  },
+];
+```
+
+### unique_case_sensitive
+
+Specifies that the value must be unique using case-sensitive comparison.
+
+```javascript
+validations: [
+  {
+    validation_type: "unique_case_sensitive",
+    message: "Must be unique (case sensitive)",
+  },
+];
+```
+
+### unique_case_insensitive
+
+Specifies that the value must be unique using case-insensitive comparison.
+
+```javascript
+validations: [
+  {
+    validation_type: "unique_case_insensitive",
+    message: "Must be unique (case insensitive)",
+  },
+];
+```
+
+## Built-in Time Transformations
+
+The options property of `addColumn` accepts an array of transformations. For the time transformations, you can specify one property:
+
+- `transformation_type:` the name of the transformation
+
+The transformations property accepts an array of objects that contains these possible values: `transformation_type`. As the example below:
+
+```javascript
+transformations: [
+  {
+    transformation_type: "autoformat",
+  },
+];
+```
+
+### autoformat
+
+The autoformat transformation automatically transforms the date in the column to a standardized format specified by the `pattern` on the column.
+
+```javascript
+transformations: [
+  {
+    transformation_type: "autoformat",
+  },
+];
+```

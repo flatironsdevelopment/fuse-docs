@@ -1,0 +1,130 @@
+---
+title: "Quickstart Examples"
+description: "The below examples should give you a strong starting point to get the importer up and running and test functionality."
+---
+
+To use the below examples, you will need to change the following values:
+
+- Your Organization's API key: You can find this at the top of the [Importers](https://fuse.flatirons.com/account/importers) page.
+- Your Importer's ID: You can find this in the table on the [Importers](https://fuse.flatirons.com/account/importers) page.
+
+## Basic Example
+
+This provides a quick example of a path for the importer where all records are valid and submittable.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/fuse-importer@latest"
+    ></script>
+    <script type="text/javascript">
+      const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
+      const importerId = "YOUR IMPORTER ID";
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      importer.onValidateRecord = async (record) => {
+        // return no frontend validation errors or warnings
+        return { errors: {}, warnings: {} };
+      };
+
+      importer.onSubmit = async (records) => {
+        // an empty hash will tell us the import was successful!
+        return {
+          message: "Your data was imported successfully",
+          errors: {},
+        };
+      };
+
+      window.showFuseImporter = () => {
+        if (
+          organizationApiKey.indexOf("YOUR") !== -1 ||
+          importerId.indexOf("YOUR") !== -1
+        ) {
+          window.confirm(
+            "You need to configure your organization api key and importer id."
+          );
+          return;
+        }
+        importer.show();
+      };
+    </script>
+  </head>
+
+  <body>
+    <button onclick="javascript:showFuseImporter()">Show Importer</button>
+  </body>
+</html>
+```
+
+## Example of Validations
+
+The example below illustrates both frontend and backend validations.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/fuse-importer@latest"
+    ></script>
+    <script type="text/javascript">
+      const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
+      const importerId = "YOUR IMPORTER ID";
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      // frontend validations
+      importer.onValidateRecord = async (record) => {
+        const errors = {};
+
+        // force emails to include Gmail
+        if (!record.email?.includes("gmail")) {
+          errors["email"] = "Email must from gmail";
+        }
+
+        return { errors: errors, warnings: {} };
+      };
+
+      importer.onSubmit = async (records) => {
+        // submit to your backend here
+
+        // return backend errors
+        // each record passed to this function has a
+        // records[index]._meta.id which represents the rowId.
+        // If your backend has an error in a row,
+        // you can pass this ID back with a custom error message for a field.
+
+        return {
+          message:
+            "Most rows were imported. We found a few errors. Please fix them and re-submit",
+          errors: {
+            [records[0]._meta.id]: {
+              email: "Email is already taken. Emails must be unique.",
+            },
+          },
+        };
+      };
+
+      window.showFuseImporter = () => {
+        if (
+          organizationApiKey.indexOf("YOUR") !== -1 ||
+          importerId.indexOf("YOUR") !== -1
+        ) {
+          window.confirm(
+            "You need to configure your organization api key and importer id."
+          );
+          return;
+        }
+        importer.show();
+      };
+    </script>
+  </head>
+
+  <body>
+    <button onclick="javascript:showFuseImporter()">Show Importer</button>
+  </body>
+</html>
+```

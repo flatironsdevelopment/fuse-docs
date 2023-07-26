@@ -1,82 +1,96 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "Flatirons Fuse Documentation",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/images/logo-dark.svg",
+    "light": "/images/logo-light.svg"
   },
   "favicon": "/favicon.png",
   "colors": {
-    "primary": "#9563FF",
-    "light": "#AE87FF",
-    "dark": "#0D001D",
+    "primary": "#E94C62",
+    "light": "#E94C62",
+    "dark": "#000000",
     "background": {
-      "dark": "#090014"
+      "dark": "#000000"
     },
     "anchors": {
-      "from": "#FF7F57",
-      "to": "#9563FF"
+      "from": "#FDBD39",
+      "to": "#fac75f"
     }
   },
   "topbarLinks": [
     {
-      "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "name": "Flatirons Website",
+      "url": "https://flatirons.com"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "Fuse Dashboard",
+    "url": "https://fuse.flatirons.com"
   },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
-  ],
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
-    },
-    {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
-    }
-  ],
   "navigation": [
     {
-      "group": "Get Started",
-      "pages": ["introduction", "quickstart", "development"]
+      "group": "Quickstart Examples",
+      "pages": ["quickstart-examples/quickstart-examples"]
     },
     {
-      "group": "Essentials",
-      "pages": ["essentials/markdown", "essentials/code", "essentials/images", "essentials/settings", "essentials/navigation"]
-    },
-    {
-      "group": "API Documentation",
-      "pages": ["api-reference/authentication"]
-    },
-    {
-      "group": "Endpoint Examples",
+      "group": "Getting Started",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/update",
-        "api-reference/endpoint/delete"
+        "getting-started/overview",
+        "getting-started/installation",
+        "getting-started/creating-an-importer",
+        "getting-started/launching-an-importer",
+        "getting-started/adding-columns",
+        "getting-started/adding-data-validations",
+        "getting-started/adding-data-transformations",
+        "getting-started/submitting-to-a-backend"
       ]
+    },
+    {
+      "group": "Use Cases",
+      "pages": ["use-cases/csv-imports", "use-cases/bulk-editing"]
+    },
+    {
+      "group": "Using Columns",
+      "pages": [
+        "using-columns/string-columns",
+        "using-columns/boolean-columns",
+        "using-columns/integer-columns",
+        "using-columns/float-columns",
+        "using-columns/email-columns",
+        "using-columns/date-columns",
+        "using-columns/datetime-columns",
+        "using-columns/time-columns",
+        "using-columns/url-columns",
+        "using-columns/dropdown-columns",
+        "using-columns/url-columns",
+        "using-columns/creating-your-own-column-type"
+      ]
+    },
+    {
+      "group": "JS Implementations",
+      "pages": [
+        "js-implementations/angular-csv-importer",
+        "js-implementations/react.js-csv-importer",
+        "js-implementations/vue.js-csv-importer"
+      ]
+    },
+    {
+      "group": "More to Love",
+      "pages": ["more-to-love/translations-i18n", "more-to-love/white-labeling"]
     }
   ],
   "footerSocials": {
-    "twitter": "https://twitter.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "linkedin": "https://www.linkedin.com/company/flatirons-development/",
+    "twitter": "https://twitter.com/FlatironsDev",
+    "instagram": "https://instagram.com/flatironsdevelopment"
+  },
+  "analytics": {
+    "ga4": {
+      "measurementId": "G-YKRHBFZMVZ"
+    }
+  },
+  "integrations": {
+    "intercom": "xk5esari"
   }
 }

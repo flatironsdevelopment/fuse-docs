@@ -1,0 +1,37 @@
+---
+title: "Boolean Columns"
+description: "How to add a boolean column to your importer through code."
+---
+
+You can add a column to your importer directly through the UI of your Fuse account, or you can do so in code using the documentation below.
+
+The Boolean column accepts "true" and "false" as values. It supports functionalities such as:
+
+- Auto-transform 0/1 to true/false
+- Auto-transform No/yes to true/false
+
+## addColumn Function
+
+The `addColumn` function accepts an object as an argument.
+
+- `internal_key` (String) - required: The internal key used to access a column's value.
+- `label` (String) - required: The user-facing column label that is shown in the interface.
+- `column_type` (String) - required: Should be "boolean".
+- `required` (String) - required: Whether or not the column is required.
+- `position` (Optional): The position or order of the column.
+
+### Example Code
+
+```javascript
+const importer = new FuseImporter(organizationApiKey, importerId);
+
+importer.addColumn({
+  internal_key: "my_boolean",
+  label: "My Boolean",
+  column_type: "boolean",
+  required: true,
+  position: 1,
+});
+
+importer.show();
+```

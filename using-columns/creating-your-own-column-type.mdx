@@ -1,0 +1,42 @@
+---
+title: "Creating Your Own Column Type"
+description: "Defining your own column type in Fuse."
+---
+
+If the built-in column types are not enough, you can define your own data structure using the String column. You do this through the use of `onValidateRecord`. You simply need to validate that the value passed to `onValidateRecord` matches your desired format.
+
+## Example of Creating a "Currency" Column
+
+```javascript
+// matches formats like $10
+const currencyRegex = /\$[0-9]*/;
+
+const importer = new FuseImporter(organizationApiKey, importerId);
+
+importer.addColumn({
+  internal_key: "total_charge",
+  label: "Total Charge",
+  column_type: "string",
+  required: true,
+  position: 1,
+  unique: true,
+});
+
+importer.onValidateRecord = async (record) => {
+  const errors = {};
+  const warnings = {};
+
+  // make sure the total charge matches the regex
+  if (!record.total_charge?.match(currencyRegex)) {
+    errors["total_charge"] =
+      "Total charge must be a dollar amount matching the format $xx";
+  }
+
+  return {
+    errors: errors,
+    warnings: warnings,
+  };
+};
+
+importer.show();
+```

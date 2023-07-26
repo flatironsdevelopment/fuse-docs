@@ -1,0 +1,40 @@
+---
+title: "Creating an Importer"
+description: "An Importer represents a schema or import configuration."
+---
+
+To use Fuse, you must first [Create an Importer](getting-started/creating-an-importer) from within your Fuse account.
+
+Note that columns, validations, and transformations can be added through the UI, or they can be added directly in code. If you plan to use code for managing columns (which is typically faster for developers), create an Importer in your account and don't add any columns to it.
+
+To use the Importer, you will need two keys:
+
+1. Your Organization's API key: This is at the top of the [Importers](https://fuse.flatirons.com/account/importers) page.
+2. Your Importer's ID: You can find this in the table on the [Importers](https://fuse.flatirons.com/account/importers) page.
+
+The code below will allow you to display the importer at the click of a button.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/fuse-importer@latest"
+    ></script>
+    <script type="text/javascript">
+      const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
+      const importerId = "YOUR IMPORTER ID";
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      window.showFuseImporter = () => {
+        importer.show();
+      };
+    </script>
+  </head>
+
+  <body>
+    <button onclick="javascript:showFuseImporter()">Show Importer</button>
+  </body>
+</html>
+```
