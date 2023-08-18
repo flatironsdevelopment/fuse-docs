@@ -15,7 +15,7 @@ The `addColumn` function accepts an object as an argument.
 - `label` (String) - required: The user-facing column label that is shown in the interface.
 - `column_type` (String) - required: Should be "datetime".
 - `required` (String) - required: Whether or not the column is required.
-- `pattern` (String) - required: must be `MM/dd/yyyy HH:mm` or `MM/dd/yyyy HH:mm:ss`. We will be adding new date formats shortly, please reach out if you need them.
+- `pattern` (String) - required: must be one of [these patterns](#patterns).
 - `position` (Optional): The position or order of the column.
 - `unique` (Optional): Whether values should be unique.
 - `validations` (Optional): An array of built-in data validations. See [Built-in DateTime Validations](#built-in-date-validations).
@@ -99,6 +99,95 @@ The `addColumn` function accepts an object as an argument.
 
   </Tab>
 </Tabs>
+
+## Patterns
+
+**MM/dd/yyyy HH:mm**<br/>
+Example: 08/31/2023 12:30; 09/31/2005 12:30
+
+**MM/dd/yyyy HH:mm:ss**<br/>
+Example: 08/31/2023 12:30:45; 08/31/2005 12:30:45
+
+**MM/dd/yyyy HH:mm:ss.SSS**<br/>
+Example: 08/31/2023 12:30:45.500; 08/31/2005 12:30:45.500
+
+**MM/dd/yyyy h:mm a**<br/>
+Example: 08/31/2023 1:30 PM; 08/31/2023 1:30 PM
+
+**MM/dd/yyyy h:mm:ss a**<br/>
+Example: 08/31/2023 1:30:45 PM; 08/31/2005 1:30:45 PM
+
+**MMM dd HH:mm:ss yyyy**<br/>
+Example: Jan 15 00:34:59 1990; Feb 15 00:34:59 1990
+
+**dd MMM HH:mm:ss yyyy**<br/>
+Example: 15 Jan 00:34:59 1990; 15 Feb 00:34:59 1990
+
+**MM/dd/yyyy h:mm:ss.SSS a**<br/>
+Example: 08/31/2023 1:30:45.500 PM; 06/11/2030 1:30:45.500 PM
+
+**MMMM dd, yyyy HH:mm**<br/>
+Example: August 31, 2023 12:30; January 15, 2023 12:30
+
+**MMMM dd, yyyy HH:mm:ss**<br/>
+Example: August 31, 2023 12:30:45; January 15, 2023 12:30:45
+
+**MMMM dd, yyyy h:mm a**<br/>
+Example: August 31, 2023 1:30 PM; January 15, 2023 1:30 PM
+
+**MMMM dd, yyyy h:mm:ss a**<br/>
+Example: August 31, 2023 1:30:45 PM; January 15, 2023 1:30:45 PM
+
+**MMMM dd, yyyy h:mm:ss.SSS a**<br/>
+Example: August 31, 2023 1:30:45.500 PM; January 15, 2023 1:30:45.500 PM
+
+**MM-dd-yy HH:mm**<br/>
+Example: 01-15-90 10:10; 05-15-90 10:10
+
+**dd-MM-yyyy HH:mm**<br/>
+Example: 15-01-1990 10:10; 15-01-1990 10:10
+
+**dd/MM/yyyy HH:mm**<br/>
+Example: 15/01/1990 10:10; 12/11/1990 10:10
+
+**dd-MM-yyyy h:mm a**<br/>
+Example: 15-01-1990 10:10 AM; 15-01-1990 10:10 AM
+
+**dd/MM/yyyy h:mm a**<br/>
+Example: 12/11/1990 10:10 AM; 15/01/1990 10:10 AM
+
+**MM/dd/yy HH:mm**<br/>
+Example: 01/15/90 10:10; 05/15/90 10:10
+
+**MM/dd/yy HH:mm:ss**<br/>
+Example: 01/15/90 10:10:14; 05/15/90 10:10:14
+
+**MM/dd/yy h:mm:ss a**<br/>
+Example: 01/15/90 5:10:14 AM; 05/15/90 5:10:14 AM
+
+**yyyy/MM/dd HH:mm**<br/>
+Example: 1990/01/15 10:10; 2007/11/16 10:10
+
+**MM-dd-yyyy HH:mm**<br/>
+Example: 01-15-1990 10:10; 05-15-1990 10:10
+
+**yyyy-MM-dd HH:mm**<br/>
+Example: 1990-01-15 10:10; 2007-11-16 10:10
+
+**yyyy-MM-dd'T'HH:mm:ss.SSSZ**<br/>
+Example: 1990-01-15T00:34:55.020+09:30; 2007-11-16T00:34:55.020+09:30
+
+**yyyy-MM-dd'T'HH:mm:ss.SSS**<br/>
+Example: 1990-01-15T00:34:55.020; 2007-11-16T00:34:55.020
+
+**yyyy-MM-dd'T'HH:mmZ**<br/>
+Example: 1990-01-15T10:10+09:30; 2007-11-16T10:10+09:30
+
+**yyyy-MM-dd'T'HH:mm**<br/>
+Example: 1990-01-15T10:10; 2007-11-16T10:10
+
+**dd/MM/yyyy**<br/>
+Example: 25/04/2023; 15/11/2023
 
 ## Built-in DateTime Validations
 
