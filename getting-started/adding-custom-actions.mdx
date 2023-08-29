@@ -1,0 +1,103 @@
+---
+title: "Adding Custom Actions"
+description: "Custom actions allow you to manipulate your data with the flexibility you need."
+---
+
+Depending on your use case you may need access to your data before it is imported. For example, you may need to format the data, or you may need to make an API call to another service to get additional data and manipulate it in the spreadsheet. You can get access to your data before it is imported by using the `addCustomAction` hook.
+
+## `addCustomAction(action)`
+
+The `addCustomAction` hook is called for every row you select in the spreadsheet. It allows you to format, get access to the data, change your values and much more.
+
+Here are some samples of things you might want to do with this hook:
+
+- Add validations based on some record values. E.g., if 'first_name' has X pattern, remove the value from it and replace the 'last_name' with this value
+- Add custom data transformations for records
+- Add prefix/suffix/general data modification
+- Do API calls for comparing data, checking values, fetching new information, etc
+- Do calculation with the data. E.g., a formula that has to verify the value of 'stock' and 'product_price' to add this result to 'total'
+- Custom export of selected rows to an API, so the user can select the rows and after the mapping on each field, create a new object that would be submitted to a backend later to save partially your spreadsheet
+- Access external/local data, not only by API, but also using `import data from "./data"` and compare your values with this data
+- Verify duplicate data based on your criteria
+
+This hook accepts an array or object of actions. Each action is an object with the following properties:
+
+- `name` - The name of the action. This is used to identify the action in the UI.
+- `handler` - A function that receives a record as parameter and returns the record with your modifications. This function is called for each record that is selected in the spreadsheet. The record that is returned from this function is the new record that will be displayed in the spreadsheet.
+- `actionType` - The type of action. This is used to determine where the action will be executed. Currently, the accepted value is `record`.
+
+### record
+
+The `handler` function receives an object as parameter. This object is the record that is selected in the spreadsheet. The record is an object with the properties you defined in the columns of your template. So if you have 'first_name', 'last_name' and 'age' columns in your template, your record object will look like this:
+
+```javascript
+{
+  first_name: "John",
+  last_name: "Doe",
+  age: 30
+}
+```
+
+<Note>
+  Your actions will be hidden in the UI until you select a row in the
+  spreadsheet. Also, if you didn't set any action, the UI for it won't be
+  displayed.
+</Note>
+
+## Example
+
+### Passing an object as a property (single action)
+
+```javascript
+importer.addCustomAction({
+  name: "Add Full Name",
+  actionType: "record",
+  handler: (record) => {
+    const firstName = record.first_name;
+    const lastName = record.last_name;
+
+    if (firstName && lastName) {
+      record.full_name = `${firstName} ${lastName}`;
+    }
+
+    return record;
+  },
+});
+```
+
+### Passing an array of objects (multiple actions)
+
+```javascript
+importer.addCustomAction([
+  {
+    name: "Correct Price",
+    actionType: "record",
+    handler: async (record) => {
+      const id = record.id;
+      const price = record.price;
+
+      const correctPrice = await fetch(`https://myapi.com/price/${id}`, {
+        method: "POST",
+        body: JSON.stringify({ price }),
+      });
+
+      record.price = correctPrice;
+
+      return record;
+    },
+  },
+  {
+    name: "Replace Domain",
+    actionType: "record",
+    handler: (record) => {
+      const email = record.email;
+
+      if (email && email.includes("mydomain.com")) {
+        record.email = email.replace("mydomain.com", "mydomain2.com");
+      }
+
+      return record;
+    },
+  },
+]);
+```

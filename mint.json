@@ -43,6 +43,7 @@
         "getting-started/adding-columns",
         "getting-started/adding-data-validations",
         "getting-started/adding-data-transformations",
+        "getting-started/adding-custom-actions",
         "getting-started/submitting-to-a-backend"
       ]
     },
