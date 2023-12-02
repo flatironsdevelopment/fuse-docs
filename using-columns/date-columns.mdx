@@ -15,7 +15,7 @@ The `addColumn` function accepts an object as an argument.
 - `label` (String) - required: The user-facing column label that is shown in the interface.
 - `column_type` (String) - required: Should be "date".
 - `required` (String) - required: Whether or not the column is required.
-- `pattern` (String) - required: must be `MM/dd/yyyy`. We will be adding new date formats shortly, please reach out if you need them.
+- `pattern` (String) - required: Must be one of [these patterns](#patterns).
 - `position` (Optional): The position or order of the column.
 - `unique` (Optional): Whether values should be unique.
 - `validations` (Optional): An array of built-in data validations. See [Built-in Date Validations](#built-in-date-validations).
@@ -99,6 +99,119 @@ The `addColumn` function accepts an object as an argument.
 
   </Tab>
 </Tabs>
+
+## Patterns
+
+**MM/dd/yyyy**<br/>
+Example: 08/31/2023; 12/15/2023
+
+**yyyy-MM-dd**<br/>
+Example: 2023-08-31; 2023-12-15
+
+**dd/MM/yyyy**<br/>
+Example: 31/08/2023; 15/12/2023
+
+**MM-dd-yyyy**<br/>
+Example: 08-31-2023; 12-15-2023
+
+**yyyy/MM/dd**<br/>
+Example: 2023/08/31; 2023/12/15
+
+**dd-MMMM-yyyy**<br/>
+Example: 31-August-2023; 15-December-2023
+
+**MMMM dd, yyyy**<br/>
+Example: August 31, 2023; December 15, 2023
+
+**dd/MM/yy**<br/>
+Example: 31/08/23; 15/12/23
+
+**MMMM dd, yy**<br/>
+Example: August 31, 23; December 15, 23
+
+**yy/MM/dd** <br/>
+Example: 23/08/31; 23/12/15
+
+**EEEE MMMM yyyy** <br/>
+Example: Tuesday August 2023; Thursday December 2023
+
+**EEEE dd MMMM yyyy**<br/>
+Example: Tuesday 08 August 2023; Thursday 15 December 2023
+
+**MM-dd-yy**<br/>
+Example: 01-15-90; 12-31-99
+
+**M-dd-yy**<br/>
+Example: 1-15-90; 12-31-99
+
+**dd-MM-yy**<br/>
+Example: 15-01-90; 31-12-99
+
+**dd-MM-yyyy**<br/>
+Example: 15-01-1990; 15-12-2023
+
+**dd-M-yy**<br/>
+Example: 15-1-90; 15-12-23
+
+**MM/dd/yy**<br/>
+Example: 01/15/90; 12/31/99
+
+**M/dd/yy**<br/>
+Example: 1/15/90; 12/31/99
+
+**MM.dd.yy**<br/>
+Example: 01.15.90; 12.31.99
+
+**M.dd.yy**<br/>
+Example: 1.15.90; 12.31.99
+
+**MMM-dd-yy**<br/>
+Example: Jan-15-90; Dec-31-99
+
+**MMMM-dd-yy**<br/>
+Example: January-15-90; December-31-99
+
+**dd-MMM-yy**<br/>
+Example: 15-Jan-90; 31-Dec-99
+
+**yyyy-M-dd**<br/>
+Example: 1990-1-15; 2023-12-31
+
+**M-dd-yyyy**<br/>
+Example: 1-15-1990; 12-31-2023
+
+**M/dd/yyyy**<br/>
+Example: 1/15/1990; 12/31/2023
+
+**dd/M/yyyy**<br/>
+Example: 15/1/1990; 31/12/2023
+
+**yyyy/M/dd**<br/>
+Example: 1990/1/15; 2023/12/31
+
+**dd.MM.yyyy**<br/>
+Example: 15.01.1990; 31.12.2023
+
+**dd.M.yyyy**<br/>
+Example: 15.1.1990; 31.12.2023
+
+**yyyy.MM.dd**<br/>
+Example: 1990.01.15; 2023.12.31
+
+**yyyy.M.dd**<br/>
+Example: 1990.1.15; 2023.12.31
+
+**MMM. dd, yyyy**<br/>
+Example: Jan. 15, 1990; Dec. 31, 2023
+
+**dd MMM. yyyy**<br/>
+Example: 15 Jan. 1990; 31 Dec. 2023
+
+**dd. MMM. yyyy**<br/>
+Example: 15. Jan. 1990; 31. Dec. 2023
+
+**EEE, MMM dd, yyyy**<br/>
+Example: Mon, Jan 15, 1990; Fri, Dec 31, 2023
 
 ## Built-in Date Validations
 

@@ -45,7 +45,7 @@ importer.onSubmit = async (records) => {
 
   return {
     message,
-    recordsToDisplay: records // add this if you want to show all records after an error occurs
+    recordsToDisplay: records, // add this if you want to show all records after an error occurs
     errors: {
       [records[0]._meta.id]: {
         "email": "Email is already taken. Emails must be unique.",

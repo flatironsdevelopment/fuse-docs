@@ -15,7 +15,7 @@ The `addColumn` function accepts an object as an argument.
 - `label` (String) - required: The user-facing label shown in the interface.
 - `column_type` (String) - required: Should be "time".
 - `required` (String) - required: Whether or not the column is required.
-- `pattern` (String) - required: must be `HH:mm` or `HH:mm:ss`. We will be adding new time formats shortly; please reach out if you need them.
+- `pattern` (String) - required: must be one of [these patterns](#patterns).
 - `position` (Optional): The position or order of the column.
 - `validations` (Optional): An array of built-in data validations. See [Built-in Time Validations](#built-in-time-validations).
 - `transformations` (Optional): An array of built-in data transformations. See [Built-in Time Transformations](#built-in-time-transformations).
@@ -92,6 +92,20 @@ The `addColumn` function accepts an object as an argument.
 
   </Tab>
 </Tabs>
+
+## Patterns
+
+**HH:mm**<br/>
+Example: 12:30; 23:45
+
+**HH:mm:ss**<br/>
+Example: 12:30:45; 23:45:30
+
+**hh:mm a**<br/>
+Example: 01:30 PM; 11:45 AM
+
+**hh:mm:ss a**<br/>
+Example: 01:30:45 PM; 11:45:30 AM
 
 ## Built-in Time Validations
 
