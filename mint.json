@@ -62,9 +62,16 @@
         "using-columns/datetime-columns",
         "using-columns/time-columns",
         "using-columns/url-columns",
-        "using-columns/dropdown-columns",
-        "using-columns/creating-your-own-column-type"
+        "using-columns/dropdown-columns"
       ]
+    },
+    {
+      "group": "Appearance",
+      "pages": ["appearance/modals", "appearance/white-labeling"]
+    },
+    {
+      "group": "Extending Functionality",
+      "pages": ["extending/custom-actions", "extending/creating-your-own-column-type"]
     },
     {
       "group": "JS Implementations",
@@ -76,7 +83,7 @@
     },
     {
       "group": "More to Love",
-      "pages": ["more-to-love/translations-i18n", "more-to-love/white-labeling"]
+      "pages": ["more-to-love/translations-i18n"]
     }
   ],
   "footerSocials": {
