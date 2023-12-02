@@ -5,15 +5,20 @@ description: "Fuse allows developers to define custom bulk actions."
 
 Developers can add bulk action functionality to the importer using Custom Actions. See the preview below for an example.
 
-## addCustomAction Function
+## addCustomAction
 
 The `addCustomAction` function accepts an object as an argument with the following properties:
 
 - `action_type` (String) - required: Currently must be set to "record".
 - `name` (String) - required: A succinct description of the action.
-- `handler` (Function) - required: A function that takes a record and manipulates it when the action is performed.
+- `handler` (Function) - required: A function that takes a `record` and manipulates it when the action is performed.
 
-### Example Code
+<Note>
+  Custom actions are hidden in the UI until you select a row in the spreadsheet.  
+</Note>
+
+
+## Example Code
 
 ```javascript
 const importer = new FuseImporter(organizationApiKey, importerId);
