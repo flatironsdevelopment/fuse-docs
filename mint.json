@@ -67,6 +67,10 @@
       ]
     },
     {
+      "group": "Appearance",
+      "pages": ["appearance/modals", "appearance/white-labeling"]
+    },
+    {
       "group": "JS Implementations",
       "pages": [
         "js-implementations/angular-csv-importer",
