@@ -62,8 +62,7 @@
         "using-columns/datetime-columns",
         "using-columns/time-columns",
         "using-columns/url-columns",
-        "using-columns/dropdown-columns",
-        "using-columns/creating-your-own-column-type"
+        "using-columns/dropdown-columns"
       ]
     },
     {
