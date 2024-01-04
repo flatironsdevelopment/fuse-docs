@@ -37,6 +37,7 @@
       "group": "Getting Started",
       "pages": [
         "getting-started/overview",
+        "getting-started/concepts",
         "getting-started/installation",
         "getting-started/creating-an-importer",
         "getting-started/launching-an-importer",
