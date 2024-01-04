@@ -1,0 +1,14 @@
+---
+title: "Authentication"
+description: "How to authenticate with the Fuse API"
+---
+
+To access the Fuse API, you need to [create an API key](https://fuse.flatirons.com/account/developers) in the Developers section of your account.
+
+In each request you send to Fuse, you should send an API key from your account using [Bearer Authentication](https://swagger.io/docs/specification/authentication/bearer-authentication/). 
+
+To do this, include the following header in your requests:
+
+```
+Authorization: Bearer <token>
+```

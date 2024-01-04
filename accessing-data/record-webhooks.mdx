@@ -1,0 +1,129 @@
+---
+title: "Record Webhooks"
+description: "How to use Record Webhooks to get data into your system"
+---
+
+## Overview
+Record Webhooks are sent to your servers in real time as the user is submtting the Importer. Due to the real-time nature of Record webhooks, they should only be used if:
+- You need the data each Import in your system **before the user exits the Importer**.
+- You need to pass back-end data validation issues back to the user (note: in many cases, the [Fuse validations](/getting-started/adding-data-validations/) are sufficient and it is not necessary to use your own back-end validations)
+
+Each Record Webhook sent to your server will contain a **batch** of records (up to 1000 records). An import with 10,000 records will have ten Record Webhooks sent, each with a batch of 1000 records.
+Record Webhooks send records in batches. Each batch has up to 1000 records in it.
+
+## Record Webhook Flow
+There are three steps that you need to setup in order to get Record Webhooks working properly.
+
+### Step 1: Fuse send batches of records to external webhook
+Fuse will send records to your webhook in **batches** of 1000. They payload looks like this:
+
+```
+  {
+    batch_slug: `random-string`,
+    import_id: 1,
+    records: [],
+    complete: false
+  }
+```
+
+See the [Record Webhook Format](#record-webhook-format) for more details on the payload.
+
+### Step 2: Your servers tells Fuse when each batch is processed
+Due to the nature of the record webhook flow being processed in real time as the user is submitting an import, it's important to communicate the progress of each batch to Fuse. Doing this allows Fuse to show an accurate progress bar to the end user that is submitting data.
+
+There are two ways to tell Fuse that your system has finished processing a batch:
+
+#### Option 1: Respond to the record webhook with a `complete` status
+If you are able to process the batch of records inline in the HTTP webhook request, you can simply respond to the HTTP request with the following:
+
+```
+{
+  status: 'complete',
+  validation_issues: [{
+    import_id: 1
+    record_id: 2,
+    validation_type: 'error',
+    column_name: 'email',
+    issue_description: 'Email already exists and must be unqiue.'
+  }]
+}
+```
+
+Details of this payload format are the same as the [Batch Status Request Format](#batch-status-request-format).
+
+
+#### Option 2: Send Fuse a webhook after the batch has been processed
+If you need extra time to process a webhook outside of the record webhook HTTP request, respond to the record webhook with a status of processing:
+
+```
+{
+  status: 'processing'
+}
+```
+
+Then, you can send an HTTP request to Fuse to update the status of your batch. We call this a [Batch Status Request](#batch-status-request-format).
+
+```
+POST https://fuse.flatirons.com/api/v1/webhooks/batches/:batch_id
+Headers:
+- X-Secret-Token: {WEBHOOK_SECRET_KEY}
+Body:
+{ 
+  status: 'complete',
+  validation_issues: [{
+    import_id: 1
+    record_id: 2,
+    validation_type: 'error',
+    column_name: 'email',
+    issue_description: 'Email already exists and must be unqiue.'
+  }]
+}
+```
+
+### Step 3: Your server tells Fuse when all batches have been processed
+After all batches have been processed, you must tell Fuse so that we know that we are done with the Import.
+
+The final batch that we send to your record webhook will have `complete: true` set in the payload. After all batches are processed, send the following request.
+
+```
+POST https://fuse.flatirons.com/api/v1/webhooks/imports/:import_id
+Headers:
+- X-Secret-Token: {WEBHOOK_SECRET_KEY}
+Body:
+{ 
+  status: 'records_processed'
+}
+```
+
+
+## Record Webhook Format
+Record webhooks are sent in POST requests to your servers with the following payload structure.
+
+```
+  {
+    batch_slug: `random-string`,
+    import_id: 1,
+    records: [],
+    complete: false
+  }
+```
+
+## Batch Status Request Format
+Batch status requests are sent to the Fuse servers to let Fuse know when once a batch has been processed.
+
+```
+POST https://fuse.flatirons.com/api/v1/webhooks/batches/:batch_id
+Headers:
+- X-Secret-Token: {WEBHOOK_SECRET_KEY}
+Body:
+{ 
+  status: 'complete',
+  validation_issues: [{
+    import_id: 1
+    record_id: 2,
+    validation_type: 'error',
+    column_name: 'email',
+    issue_description: 'Email already exists and must be unqiue.'
+  }]
+}
+```

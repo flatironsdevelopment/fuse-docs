@@ -1,0 +1,31 @@
+---
+title: "Status Webhooks"
+description: "How to use Status Webhooks to be notified about when new imports are available via API"
+---
+
+## Overview
+Status Webhooks are sent to your server when a new import has been processed and is available for consumption through the Fuse API.
+
+To add a Status Webhook, go to the [Developers tab](https://fuse.flatirons.com/account/developers) of your Fuse account.
+
+## Flow
+
+1. Fuse sends Status Webhook to your servers when a new import is available
+
+Here is the request format:
+
+```
+{
+  import_id: 1,
+  status: 'records_submitted'
+}
+```
+
+A status of `records_submitted` means that all records from an Import are currently stored on the Fuse servers and are available for API consumption. After consuming the records from the Fuse API, you can update the status of the import to `records_processed` using 
+
+2. You use the Fuse API to get the records from the import into your database
+
+
+
+3. You update the status of the Import
+

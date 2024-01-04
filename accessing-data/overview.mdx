@@ -1,0 +1,31 @@
+---
+title: "Overview"
+description: "An overview of how to get data from Fuse into your own system"
+---
+
+There are two recommended ways to get data from Fuse into your system: 
+- the API (pull)
+- Record webhooks (push)
+
+If your importer has Incognito mode enabled, the API and webhooks are unavailable. See [instructions](/access-data/incognito-mode) for accessing data with Incognito enabled.
+
+## **API Access**
+
+For many situations, accessing import data [via the API](/accessing-data/api-access) is the best way to get data out of Fuse and into your own database.
+
+API access can be used in conjunction with [Status Webhooks](/accessing-data/status-webhooks) to get into your system right after it has been uploaded.
+
+### **When to use the API**
+
+The API is typically the best option if you do not need the data in your system at the time when the user closes out of their Importer.
+
+## **Record Webhooks**
+
+[Record Webhooks](/accessing-data/record-webhooks) are processed **in real time** as the user is submitting an import. 
+
+### **When to use Record Webhooks**
+
+Record webhooks are best in two scenarios:
+
+1. When your system needs data added to your database in real-time as the user imports it
+2. When you wish to communicate backend data validation issues to the user
