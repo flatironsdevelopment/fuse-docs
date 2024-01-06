@@ -38,14 +38,16 @@ If you are able to process the batch of records inline in the HTTP webhook reque
 
 ```
 {
-  status: 'complete',
-  validation_issues: [{
-    import_id: 1
-    record_id: 2,
-    validation_type: 'error',
-    column_name: 'email',
-    issue_description: 'Email already exists and must be unqiue.'
-  }]
+  batch: {
+    status: 'completed',
+    validation_issues: [{
+      import_id: 1
+      record_id: 2,
+      validation_type: 'error',
+      column_name: 'email',
+      issue_description: 'Email already exists and must be unqiue.'
+    }]
+  }
 }
 ```
 
@@ -57,7 +59,9 @@ If you need extra time to process a webhook outside of the record webhook HTTP r
 
 ```
 {
-  status: 'processing'
+  batch: {
+    status: 'processing'
+  }
 }
 ```
 
@@ -69,14 +73,16 @@ Headers:
 - X-Secret-Token: {WEBHOOK_SECRET_KEY}
 Body:
 { 
-  status: 'complete',
-  validation_issues: [{
-    import_id: 1
-    record_id: 2,
-    validation_type: 'error',
-    column_name: 'email',
-    issue_description: 'Email already exists and must be unqiue.'
-  }]
+  batch: {
+    status: 'completed',
+    validation_issues: [{
+      import_id: 1
+      record_id: 2,
+      validation_type: 'error',
+      column_name: 'email',
+      issue_description: 'Email already exists and must be unqiue.'
+    }]
+  }
 }
 ```
 
@@ -117,13 +123,15 @@ Headers:
 - X-Secret-Token: {WEBHOOK_SECRET_KEY}
 Body:
 { 
-  status: 'complete',
-  validation_issues: [{
-    import_id: 1
-    record_id: 2,
-    validation_type: 'error',
-    column_name: 'email',
-    issue_description: 'Email already exists and must be unqiue.'
-  }]
+  batch: {
+    status: 'completed',
+    validation_issues: [{
+      import_id: 1
+      record_id: 2,
+      validation_type: 'error',
+      column_name: 'email',
+      issue_description: 'Email already exists and must be unqiue.'
+    }]
+  }
 }
 ```
