@@ -108,15 +108,7 @@
         "api/resources/imports/list-imports",
         "api/resources/records/import-records"
       ]
-    },
-    {
-      "group": "Webhooks",
-      "pages": [
-        "api/webhooks/status",
-        "api/webhooks/records"
-      ]
     }
-
   ],
   "footerSocials": {
     "linkedin": "https://www.linkedin.com/company/flatirons-development/",
