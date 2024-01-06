@@ -105,8 +105,8 @@
     {
       "group": "Resources",
       "pages": [
-        "api/imports",
-        "api/records"
+        "api/resources/imports/list-imports",
+        "api/resources/records/import-records"
       ]
     },
     {

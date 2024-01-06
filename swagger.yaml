@@ -1,0 +1,169 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/v1/imports/{import_slug}/records":
+    get:
+      summary: Import Records
+      tags:
+      - Records
+      parameters:
+      - name: import_slug
+        in: path
+        required: true
+        description: Import Slug
+        schema:
+          type: string
+      - name: Authorization
+        in: header
+        description: 'API Secret Key from your Fuse account. This header should be
+          of the format ''Authorization: Bearer {secret_key}'''
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number for pagination
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: Number of records per page, maximum of 100
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: records found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: The id of the record
+                        record_id:
+                          type: integer
+                          description: An id used for internal purposes by Fuse
+                        data:
+                          type: object
+                          description: An object containing record data
+                        created_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp of creation for the record
+                        updated_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp of creation for the record
+                        sort:
+                          type: integer
+                          description: The sort order
+                      required:
+                      - id
+                      - record_id
+                      - data
+                      - created_at
+                      - updated_at
+                      - sort
+                description: A paginated list of records for a particular import
+                required:
+                - data
+        '404':
+          description: import not found
+        '401':
+          description: unauthorized
+  "/api/v1/imports":
+    get:
+      summary: List Imports
+      tags:
+      - imports
+      parameters:
+      - name: Authorization
+        in: header
+        description: 'API Secret Key from your Fuse account. This header should be
+          of the foramt ''Authorization: Bearer {secret_key}'''
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number for pagination
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: Number of records per page, maximum of 100
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: filtered imports found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: A paginated list of imports
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: The id of the import
+                        row_count:
+                          type: integer
+                          description: The number of rows in the import
+                        template_id:
+                          type: integer
+                          description: The id of the template
+                        created_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp of creation for the import
+                        updated_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp of creation for the import
+                        status:
+                          type: string
+                          enum:
+                          - created
+                          - records_submitting
+                          - records_submitted
+                          - records_processed
+                          description: The status of the import
+                        slug:
+                          type: string
+                          description: The slug of the import
+                      required:
+                      - id
+                      - row_count
+                      - template_id
+                      - created_at
+                      - updated_at
+                      - status
+                      - slug
+        '401':
+          description: unauthorized
+servers:
+- url: http://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
