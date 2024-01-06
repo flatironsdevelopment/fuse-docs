@@ -9,17 +9,13 @@ paths:
       summary: Import Records
       tags:
       - Records
+      security:
+      - bearer: []
       parameters:
       - name: import_slug
         in: path
         required: true
         description: Import Slug
-        schema:
-          type: string
-      - name: Authorization
-        in: header
-        description: API Secret Key from your Fuse account. This header should be
-          of the format 'Bearer {secret_key}'.
         schema:
           type: string
       - name: page
@@ -84,13 +80,9 @@ paths:
       summary: List Imports
       tags:
       - imports
+      security:
+      - bearer: []
       parameters:
-      - name: Authorization
-        in: header
-        description: 'API Secret Key from your Fuse account. This header should be
-          of the foramt ''Authorization: Bearer {secret_key}'''
-        schema:
-          type: string
       - name: page
         in: query
         description: The page number for pagination
@@ -158,7 +150,7 @@ paths:
         '401':
           description: unauthorized
 servers:
-- url: http://{defaultHost}
+- url: https://fuse.flatirons.com
   variables:
     defaultHost:
       default: www.example.com
