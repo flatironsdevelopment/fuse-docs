@@ -18,8 +18,8 @@ paths:
           type: string
       - name: Authorization
         in: header
-        description: 'API Secret Key from your Fuse account. This header should be
-          of the format ''Authorization: Bearer {secret_key}'''
+        description: API Secret Key from your Fuse account. This header should be
+          of the format 'Bearer {secret_key}'.
         schema:
           type: string
       - name: page
