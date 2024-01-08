@@ -1,0 +1,57 @@
+---
+title: "Concepts"
+description: "Key concepts within Fuse"
+---
+
+## Importer
+
+An **Importer** represents a single data schema. Importers are embedded into your website or launched directly from Fuse. Each Importer has a series of columns associated with it, and each column has validations and transformations.
+
+If you are used to working with a CSV or spreadsheet template file that users fill out in order to import data into your system, then each Importer in Fuse will be the equivalent of a single CSV template file.
+
+## Column
+
+A **Column** is a fundamental component within an **Importer**, defining the structure and characteristics of the data that users can upload.
+
+Each column has a data type (e.g., String, Float, Data, URL), any number of validations, and any number of transformations.
+
+## Validation
+
+**Validations** are a crucial concept that ensures data quality and integrity during the data import process. Validations are checks applied to the data, and they serve to verify that the data adheres to predefined criteria.
+
+Fuse supports showing both front-end and back-end validation issues to users.
+
+### **Types of Validations**
+
+Flatirons Fuse categorizes validations into two primary types: **errors** and **warnings**.
+
+**Error Validations**
+
+Error validations are checks that must be satisfied before a user can successfully submit an Importer. When data fails an error validation, it indicates that there are critical issues that need to be addressed for the data to be considered valid. Users are required to correct these issues before proceeding with the data upload.
+
+**Warning Validations**
+
+Warning validations, on the other hand, provide users with advisory information regarding potential issues in the data. While warning validations highlight areas of concern, they do not block users from submitting an Importer. Users can proceed with the import even if warning validations are present. This flexibility is especially useful when users need to complete an import quickly while being aware of potential data discrepancies.
+
+## Transformation
+
+**Transformations** are a powerful feature within Flatirons Fuse that enables you to automate and customize data modifications during the data upload process. Depending on your needs, you can create a wide range of Transformations, from simple ones like capitalization to more complex operations that involve combining, splitting, or reformatting data.
+
+### Examples
+
+- Combining first_name and last_name into a full_name column
+- Splitting a full_name column into first_name and last_name
+- Capitalizing a first_name column
+- Autoformatting dates to a pre-defined format (e.g., mm/dd/YYYY)
+
+## Import
+
+An Import represents a single submission of an Importer. Each import has records associated with it.
+
+## Batch
+
+A **Batch** is simply a collection of Records, typically in groups of 1000. When Records are sent from Fuse to your system, they are sent in Batches.
+
+## Record
+
+A **************Record************** represents a single row of an Import.

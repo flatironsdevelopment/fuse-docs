@@ -1,3 +1,6 @@
+### Fuse Instructions
+To update the swagger docs, use the script inside of the repo project at `lib/scripts/generate_fuse_docs_swagger.sh`.
+
 ### 👩‍💻 Development
 
 Install the [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the documentation changes locally. To install, use the following command

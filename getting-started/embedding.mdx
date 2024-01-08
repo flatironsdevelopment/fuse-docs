@@ -1,0 +1,129 @@
+---
+title: "Embedding Fuse"
+description: "Install our NPM package on your website."
+---
+
+Embedding Fuse in your website is simple. There are two steps:
+1. Add the [fuse-importer NPM package](#adding-the-npm-package) to your application.
+2. Add a small [JavaScript snippet](#launching-an-importer) to open your Fuse importer.
+
+## Adding the NPM Package
+<Tabs>
+  <Tab title="YARN">
+    If you are installing Fuse Importer in a React-based project, do:
+
+    ```bash
+    yarn add fuse-importer
+    ```
+
+    If your project does not have
+
+    ```bash
+    yarn add fuse-importer react react-dom
+    ```
+
+    To import the data importer, use:
+
+    ```typescript
+    import FuseImporter from "fuse-importer";
+    ```
+
+  </Tab>
+  <Tab title="NPM">
+    If you are installing Fuse Importer in a React-based project, do:
+
+    ```bash
+    npm install fuse-importer --save
+    ```
+
+    If you are installing Fuse Importer in a Vue or Angular-based project, do:
+
+    ```bash
+    npm install fuse-importer react react-dom --save
+    ```
+
+    To import the data importer, use:
+
+    ```typescript
+    import FuseImporter from "fuse-importer";
+    ```
+
+  </Tab>
+  <Tab title="CDN">
+    If you're not using a module bundler or package manager, Fuse is also hosted on the [unpkg.com](https://unpkg.com/) CDN.
+
+    Make sure to place the script tag before you initialize the importer.
+
+    ```html
+    <script type="text/javascript" src="https://unpkg.com/fuse-importer@latest"></script>
+    ```
+
+  </Tab>
+</Tabs>
+
+## Launching an Importer
+
+The `show` function does exactly what it sounds like; it displays the importer. Ensure you have initialized the importer properly beforehand. Use this function like so:
+
+Setup the importer in JavaScript:
+```javascript
+// set these from your Fuse account
+const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
+const importerId = "YOUR IMPORTER ID";
+
+const importerOptions = {
+  modal: false // whether or not to show the importer in a modal
+};
+
+const importer = new FuseImporter(organizationApiKey, importerId, importerOptions);
+
+window.showFuseImporter = () => {
+  importer.show();
+}
+```
+
+To open the importer:
+```HTML
+<button onclick="javascript:showFuseImporter()">Show Importer</button>
+```
+
+## Full HTML Example Code
+
+The example below illustrates both frontend and backend validations.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/fuse-importer@latest"
+    ></script>
+    <script type="text/javascript">
+      const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
+      const importerId = "YOUR IMPORTER ID";
+      const importer = new FuseImporter(organizationApiKey, importerId);
+
+      // frontend validations
+      importer.onValidateRecord = async (record) => {
+        const errors = {};
+
+        // force emails to include Gmail
+        if (!record.email?.includes("gmail")) {
+          errors["email"] = "Email must from gmail";
+        }
+
+        return { errors: errors, warnings: {} };
+      };
+
+      window.showFuseImporter = () => {
+        importer.show();
+      };
+    </script>
+  </head>
+
+  <body>
+    <button onclick="javascript:showFuseImporter()">Show Importer</button>
+  </body>
+</html>
+```
