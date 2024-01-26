@@ -3,15 +3,19 @@ title: "Webhooks Security"
 description: "Learn how to implement signature verification for secure communication with webhooks"
 ---
 
-When creating webhooks, you have the option to provide a secret token for added security. This secret token is used to generate a signature for each outgoing payload. To ensure the integrity of incoming webhook payloads, you can validate the signature on your server.
+When creating webhooks, you have the option to provide a secret key for added security. This secret key is used to generate a signature for each outgoing payload. To ensure the integrity of incoming webhook payloads, you can validate the signature on your server.
 
-## Providing a Secret Token
+![Webhook Form](../images/accessing-data/webhooks-form.png)
 
-When creating or configuring a webhook, include a secret token in the webhook settings. This token is a shared secret between our server and the recipient of the webhook.
+To add a Webhook, go to the [Developers tab](https://fuse.flatirons.com/account/developers) of your Fuse account.
+
+## Providing a Secret Key
+
+When creating or configuring a webhook, include a secret key in the webhook settings. This key is a shared secret between our server and the recipient of the webhook.
 
 ## Signature Generation
 
-The signature is generated using the HMAC (Hash-based Message Authentication Code) algorithm with SHA-256. The process involves creating a hexdigest using the secret token and the raw payload of the webhook.
+The signature is generated using the HMAC (Hash-based Message Authentication Code) algorithm with SHA-256. The process involves creating a hexdigest using the secret key and the raw payload of the webhook.
 
 ## Signature Verification
 
@@ -27,8 +31,8 @@ Below are code snippets in various programming languages to help you validate we
   ```typescript
     import * as crypto from 'crypto';
 
-    function validateSignature(secretToken: string, rawPayload: string, receivedSignature: string): boolean {
-      const expectedSignature = crypto.createHmac('sha256', secretToken).update(rawPayload).digest('hex');
+    function validateSignature(secretKey: string, rawPayload: string, receivedSignature: string): boolean {
+      const expectedSignature = crypto.createHmac('sha256', secretKey).update(rawPayload).digest('hex');
       return receivedSignature === expectedSignature;
     }
 
@@ -40,10 +44,10 @@ Below are code snippets in various programming languages to help you validate we
 
   require 'openssl'
 
-  def validate_signature(secret_token, raw_payload, received_signature)
+  def validate_signature(secret_key, raw_payload, received_signature)
     expected_signature = OpenSSL::HMAC.hexdigest(
       OpenSSL::Digest.new('sha256'),
-      secret_token,
+      secret_key,
       raw_payload
     )
     received_signature == expected_signature
@@ -57,8 +61,8 @@ Below are code snippets in various programming languages to help you validate we
   use Illuminate\Support\Facades\Request;
   use Illuminate\Support\Facades\Hash;
 
-  function validateSignature($secretToken, $rawPayload, $receivedSignature) {
-    $expectedSignature = Hash::hmac('sha256', $rawPayload, $secretToken);
+  function validateSignature($secretKey, $rawPayload, $receivedSignature) {
+    $expectedSignature = Hash::hmac('sha256', $rawPayload, $secretKey);
     return hash_equals($expectedSignature, $receivedSignature);
   }
 
@@ -70,8 +74,8 @@ Below are code snippets in various programming languages to help you validate we
   import hashlib
   import hmac
 
-  def validate_signature(secret_token, raw_payload, received_signature):
-      expected_signature = hmac.new(secret_token.encode('utf-8'), raw_payload.encode('utf-8'), hashlib.sha256).hexdigest()
+  def validate_signature(secret_key, raw_payload, received_signature):
+      expected_signature = hmac.new(secret_key.encode('utf-8'), raw_payload.encode('utf-8'), hashlib.sha256).hexdigest()
       return received_signature == expected_signature
 
   ```
@@ -85,10 +89,10 @@ Below are code snippets in various programming languages to help you validate we
 
       public class WebhookValidator {
 
-          public static boolean validateSignature(String secretToken, String rawPayload, String receivedSignature) {
+          public static boolean validateSignature(String secretKey, String rawPayload, String receivedSignature) {
               try {
                   Mac hmac = Mac.getInstance("HmacSHA256");
-                  SecretKeySpec secretKey = new SecretKeySpec(secretToken.getBytes(), "HmacSHA256");
+                  SecretKeySpec secretKey = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
                   hmac.init(secretKey);
 
                   byte[] hashBytes = hmac.doFinal(rawPayload.getBytes());
@@ -119,9 +123,9 @@ Below are code snippets in various programming languages to help you validate we
 
   public class WebhookValidator
   {
-      public static bool ValidateSignature(string secretToken, string rawPayload, string receivedSignature)
+      public static bool ValidateSignature(string secretKey, string rawPayload, string receivedSignature)
       {
-          using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretToken)))
+          using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey)))
           {
               var expectedSignature = BitConverter.ToString(hmac.ComputeHash(Encoding.UTF8.GetBytes(rawPayload))).Replace("-", "").ToLower();
               return receivedSignature == expectedSignature;
@@ -133,4 +137,4 @@ Below are code snippets in various programming languages to help you validate we
   </Tab>
 </Tabs>
 
-Remember to replace secretToken, rawPayload, and receivedSignature with the actual values from your webhook payload and headers. Incorporate these functions into your webhook endpoint to verify incoming requests.
+Remember to replace secretKey, rawPayload, and receivedSignature with the actual values from your webhook payload and headers. Incorporate these functions into your webhook endpoint to verify incoming requests.
