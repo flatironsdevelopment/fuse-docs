@@ -41,14 +41,13 @@ paths:
                     items:
                       type: object
                       properties:
-                        id:
-                          type: integer
-                          description: The id of the record
-                        record_id:
-                          type: integer
-                          description: An id used for internal purposes by Fuse
+                        slug:
+                          type: string
+                          format: uuid
+                          description: The slug of the record
                         data:
                           type: object
+                          additionalProperties: {}
                           description: An object containing record data
                         created_at:
                           type: string
@@ -62,8 +61,7 @@ paths:
                           type: integer
                           description: The sort order
                       required:
-                      - id
-                      - record_id
+                      - slug
                       - data
                       - created_at
                       - updated_at
@@ -111,15 +109,13 @@ paths:
                     items:
                       type: object
                       properties:
-                        id:
-                          type: integer
-                          description: The id of the import
+                        slug:
+                          type: string
+                          format: uuid
+                          description: The slug of the import
                         row_count:
                           type: integer
                           description: The number of rows in the import
-                        template_id:
-                          type: integer
-                          description: The id of the template
                         created_at:
                           type: string
                           format: date-time
@@ -136,17 +132,24 @@ paths:
                           - records_submitted
                           - records_processed
                           description: The status of the import
-                        slug:
-                          type: string
-                          description: The slug of the import
+                        template:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            slug:
+                              type: string
+                              format: uuid
+                          required:
+                          - name
+                          - slug
                       required:
-                      - id
+                      - slug
                       - row_count
-                      - template_id
+                      - template
                       - created_at
                       - updated_at
                       - status
-                      - slug
         '401':
           description: unauthorized
 servers:

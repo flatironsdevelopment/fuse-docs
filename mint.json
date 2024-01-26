@@ -53,7 +53,7 @@
         "accessing-data/api-access",
         "accessing-data/record-webhooks",
         "accessing-data/status-webhooks",
-        "accessing-data/webhooks-security",
+        "accessing-data/webhook-security",
         "accessing-data/incognito-mode"
       ]
     },
