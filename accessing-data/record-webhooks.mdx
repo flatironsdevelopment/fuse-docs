@@ -55,7 +55,7 @@ Details of this payload format are the same as the [Batch Status Request Format]
 
 
 #### Option 2: Send Fuse a webhook after the batch has been processed
-If you need extra time to process a webhook outside of the record webhook HTTP request, respond to the record webhook with a status of processing:
+By default, the inline request timeout is set to 15 seconds, after this, the request will be canceled. If you need extra time to process a webhook outside of the record webhook HTTP request, respond to the record webhook with a status of processing:
 
 ```javascript
 {
@@ -134,6 +134,117 @@ Body:
   }
 }
 ```
+
+## Batches Information
+
+In case of a batch failure, Fuse servers will retry X times until treat this as a failure. [add more info]
+
+Depending on the amount of data you will be submitting, the batch size may vary. Your backend must support larger payload sizes in case you expect to submit large batches.
+
+To do so, you may configure your backend to support a larger payload. Such as the examples below:
+
+<CodeGroup>
+
+```typescript Node.js (Nest.js / Express.js)
+
+const express = require("express");
+
+const app = express();
+
+app.use(bodyParser.json({ limit: "1mb" }));
+
+```
+
+```ruby Ruby
+# config/application.rb or config/environments/development.rb or production.rb
+
+module YourAppName
+  class Application < Rails::Application
+    # Other configurations...
+
+    # Configure the JSON payload size limit to 1MB (1 * 1024 * 1024 bytes)
+    config.middleware.insert_before(ActionDispatch::ParamsParser, "Rack::ContentLength") do |app|
+      app.config.request_parameters_parser = -> (body) {
+        json_parser = ActiveSupport::JSON.method(:decode)
+        json_parser.call(body)
+      }
+    end
+    config.middleware.use(Rack::PostBodyContentTypeParser, 'application/json', 1 * 1024 * 1024) # 1MB
+  end
+end
+```
+
+```php PHP (Laravel)
+// php.ini
+
+post_max_size = 1M
+```
+
+```python Python
+from flask import Flask, request
+
+app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB limit
+
+# Your Flask routes and other configurations...
+
+if __name__ == "__main__":
+    app.run()
+```
+
+```java Java (Spring Boot)
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.stereotype.Component;
+
+@Component
+public class TomcatCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+
+    @Override
+    public void customize(TomcatServletWebServerFactory factory) {
+        factory.setMaxHttpHeaderSize(8192); // Adjust the maximum size of the HTTP header section
+        factory.setMaxHttpPostSize(1024 * 1024); // Set the maximum payload size to 1MB (1 * 1024 * 1024 bytes)
+    }
+}
+```
+
+```cs C#
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 1024 * 1024; // 1MB limit
+        });
+
+        // Other service configurations...
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        // Middleware configurations...
+
+        app.UseRouting();
+
+        // Endpoint configurations...
+    }
+}
+```
+
+</CodeGroup>
+
+
+## Import Flow
+
+While submitting the data, the first 50% of the Import progress is related to uploading the data from the web browser to the Fuse servers. The last 50% is related to the progress of sending data between the Fuse backend and the webhook backend.
+
+If processing records in the webhook backend will take longer than 15 seconds, to process these records properly, it should be done in a background job inside the webhook server, as the request will be canceled.\
+Learn more about how to do it in the [Option 2](#option-2-send-fuse-a-webhook-after-the-batch-has-been-processed).
 
 ## Record Webhook Implementation Example
 
@@ -221,45 +332,46 @@ router.post('/record-webhook', async (req: Request, res: Response) => {
 ```
 
 ```ruby Ruby
-# Ruby
-require 'sinatra'
-require 'json'
-require 'openssl'
+class WebhooksController < ApplicationController
+  require 'openssl'
 
-post '/record-webhook' do
-  # Retrieve the signature from the headers
-  received_signature = request.env['HTTP_X_FUSE_SIGNATURE_256']
+  def record_webhook
+    # Retrieve the signature from the headers
+    received_signature = request.headers['HTTP_X_FUSE_SIGNATURE_256']
 
-  # Compute a signature using the payload and your secret key
-  secret_key = 'your_secret_key'
-  expected_signature = OpenSSL::HMAC.hexdigest('sha256', secret_key, request.body.read)
+    # Compute a signature using the payload and your secret key
+    secret_key = 'your_secret_key'
+    hmac = OpenSSL::HMAC.new(secret_key, OpenSSL::Digest.new('sha256'))
+    hmac.update(request.body.read)
+    expected_signature = hmac.hexdigest
 
-  # Compare the signatures
-  if received_signature != expected_signature
-    return status 401, 'Mismatched signatures'
-  end
-
-  # Validate the data
-  issues = []
-  import_slug = JSON.parse(request.body.read)['import_slug']
-
-  JSON.parse(request.body.read)['records'].each do |record|
-    # do something to save record.data here
-
-    # passing validation errors back to Fuse
-    if record_data_has_issues
-      issues.push({
-        import_slug: import_slug,
-        record_slug: record['slug'],
-        validation_type: 'error',
-        column_name: 'first_name',
-        issue_description: 'A validation message to show to the user'
-      })
+    # Compare the signatures
+    if received_signature != expected_signature
+      render status: :unauthorized, json: { error: 'Mismatched signatures' }
+      return
     end
-  end
 
-  content_type :json
-  { batch: { status: 'completed', validation_issues: issues } }.to_json
+    # Validate the data
+    issues = []
+    import_slug = JSON.parse(request.body.read)['import_slug']
+
+    JSON.parse(request.body.read)['records'].each do |record|
+      # do something to save record['data'] here
+
+      # passing validation errors back to Fuse
+      if record_data_has_issues
+        issues << {
+          import_slug: import_slug,
+          record_slug: record['slug'],
+          validation_type: 'error',
+          column_name: 'first_name',
+          issue_description: 'A validation message to show to the user'
+        }
+      end
+    end
+
+    render json: { batch: { status: 'completed', validation_issues: issues } }
+  end
 end
 ```
 
