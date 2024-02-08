@@ -135,13 +135,15 @@ Body:
 }
 ```
 
-## Batches Information
+## Batch Processing Overview
 
-In case of a batch failure, Fuse servers will retry X times until treat this as a failure. [add more info]
+* **Retry Mechanism:** In case of a batch request failure, the Fuse server implements a retry mechanism. After the error, there is a 20-second waiting period before the server retries one more time.\
+If the retry fails, the batch will be marked as failed. If 10 batches are marked as failed, the submitting process will be automatically terminated and all the remaining batches will be marked as failed too.\
+It's important to note that if the payload itself is incorrect, no retry will occur, and the batch will be immediately marked as failed.
 
-Depending on the amount of data you will be submitting, the batch size may vary. Your backend must support larger payload sizes in case you expect to submit large batches.
+* **Batch Size Flexibility:** Depending on the amount of data you will be submitting, the batch size may vary. Your backend must support larger payload sizes in case you expect to submit large batches.
 
-To do so, you may configure your backend to support a larger payload. Such as the examples below:
+To configure your backend to support larger payloads, consider the following examples:
 
 <CodeGroup>
 
