@@ -148,13 +148,11 @@ To configure your backend to support larger payloads, consider the following exa
 <CodeGroup>
 
 ```typescript Node.js (Nest.js / Express.js)
-
 const express = require("express");
 
 const app = express();
 
 app.use(bodyParser.json({ limit: "1mb" }));
-
 ```
 
 ```ruby Ruby
