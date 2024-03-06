@@ -29,3 +29,357 @@ A status of `records_submitted` means that all records from an Import are curren
 
 3. You update the status of the Import
 
+
+## Status Webhook Implementation Example
+
+Find the sample code below for implementing a status webhook that will be listening to Import status changes so you can access the data through Fuse API and manipulate it how you need.
+
+For this example, we call the Fuse API to retrieve the records for that Import when the status is `records_submitted`. We then save the data and call the Fuse API again to update the Import status inside Fuse.
+
+<CodeGroup>
+
+```typescript Node.js (Nest.js / Express.js)
+import { Request, Response, Router } from 'express';
+import crypto from 'crypto';
+import axios from 'axios';
+
+const router = Router();
+
+router.put("/status-webhook", async (req: Request, res: Response) => {
+  // Retrieve the signature from the headers
+  const receivedSignature = req.headers["http_x_fuse_signature_256"];
+
+  // Compute a signature using the payload and your secret key
+  const secretKey = 'your_secret_key';
+  const expectedSignature = crypto
+    .createHmac("sha256", secretKey)
+    .update(JSON.stringify(req.body))
+    .digest("hex");
+
+  // Compare the signatures
+  if (receivedSignature !== expectedSignature) {
+    return res.status(401).send("Mismatched signatures");
+  }
+
+  // Data is stored in the Fuse servers, let's consume it!
+  if (req.body.status === "records_submitted") {
+    const importSlug = req.body.import_id;
+    const importRecords = await axios.get<any>(
+      `https://fuse.flatirons.com/api/v1/imports/${importSlug}/records`,
+      {
+        headers: { Authorization: "YOUR_API_TOKEN" },
+      }
+    );
+
+    const recordsToStore = importRecords.data;
+
+    // Do what you need with the records. In this example, let's store in our database
+    // Use the implementation for your database! This is just an example
+    await importRepository.createRecords(recordsToStore);
+
+    // Stored and processed! Let's update the Import status inside Fuse
+    await axios.put(
+      `https://fuse.flatirons.com/api/v1/webhooks/imports/${importSlug}`,
+      {
+        status: "records_processed",
+      },
+      {
+        headers: { Authorization: "YOUR_API_TOKEN" },
+      }
+    );
+  }
+
+  res.status(200).send();
+});
+```
+
+```ruby Ruby
+class WebhooksController < ApplicationController
+  require 'openssl'
+  require 'json'
+  require 'net/http'
+
+  def status_webhook
+    # Retrieve the signature from the headers
+    received_signature = request.headers['HTTP_X_FUSE_SIGNATURE_256']
+
+    # Compute a signature using the payload and your secret key
+    secret_key = 'your_secret_key'
+    hmac = OpenSSL::HMAC.new(secret_key, OpenSSL::Digest.new('sha256'))
+    hmac.update(request.body.read)
+    expected_signature = hmac.hexdigest
+
+    # Compare the signatures
+    if received_signature != expected_signature
+      render status: :unauthorized, plain: 'Mismatched signatures'
+      return
+    end
+
+    # Data is stored in the Fuse servers, let's consume it!
+    if params[:status] == 'records_submitted'
+      import_slug = params[:import_id]
+      import_records_response = fetch_import_records(import_slug)
+      records_to_store = import_records_response['data']
+
+      # Do what you need with the records. In this example, let's store in our database
+      # Use the implementation for your database! This is just an example
+      create_records(records_to_store)
+
+      # Stored and processed! Let's update the Import status inside Fuse
+      update_import_status(import_slug, 'records_processed')
+    end
+
+    head :ok
+  end
+
+  private
+
+  # Fetch import records from Fuse API
+  def fetch_import_records(import_slug)
+    uri = URI("https://fuse.flatirons.com/api/v1/imports/#{import_slug}/records")
+    headers = { 'Authorization' => 'YOUR_API_TOKEN' }
+    response = Net::HTTP.get_response(uri, headers)
+    JSON.parse(response.body)
+  end
+
+  # Store records in your database
+  def create_records(records)
+    # Your implementation to store records in the database
+  end
+
+  # Update import status in Fuse
+  def update_import_status(import_slug, status)
+    uri = URI("https://fuse.flatirons.com/api/v1/webhooks/imports/#{import_slug}")
+    headers = { 'Authorization' => 'YOUR_API_TOKEN', 'Content-Type' => 'application/json' }
+    data = { status: status }
+    Net::HTTP.put(uri, data.to_json, headers)
+  end
+end
+```
+
+```php PHP (Laravel)
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
+
+Route::put('/status-webhook', function (Request $request) {
+    // Retrieve the signature from the headers
+    $receivedSignature = $request->header('http_x_fuse_signature_256');
+
+    // Compute a signature using the payload and your secret key
+    $secretKey = 'your_secret_key';
+    $expectedSignature = hash_hmac('sha256', $request->getContent(), $secretKey);
+
+    // Compare the signatures
+    if ($receivedSignature !== $expectedSignature) {
+        return response('Mismatched signatures', 401);
+    }
+
+    // Data is stored in the Fuse servers, let's consume it!
+    if ($request->status === 'records_submitted') {
+        $importSlug = $request->import_id;
+        $importRecords = Http::withHeaders(['Authorization' => 'YOUR_API_TOKEN'])->get("https://fuse.flatirons.com/api/v1/imports/{$importSlug}/records")->json();
+
+        // Do what you need with the records. In this example, let's store in our database
+        // Use the implementation for your database! This is just an example
+        createRecords($importRecords);
+
+        // Stored and processed! Let's update the Import status inside Fuse
+        Http::withHeaders(['Authorization' => 'YOUR_API_TOKEN'])->put("https://fuse.flatirons.com/api/v1/webhooks/imports/{$importSlug}", [
+            'status' => 'records_processed'
+        ]);
+    }
+
+    return response()->noContent();
+});
+```
+
+```python Python
+from flask import Flask, request
+import hashlib
+import json
+import requests
+
+app = Flask(__name__)
+
+@app.route('/status-webhook', methods=['POST'])
+def status_webhook():
+    # Retrieve the signature from the headers
+    received_signature = request.headers.get('http_x_fuse_signature_256')
+
+    # Compute a signature using the payload and your secret key
+    secret_key = 'your_secret_key'
+    expected_signature = hashlib.sha256(request.data).hexdigest()
+
+    # Compare the signatures
+    if received_signature != expected_signature:
+        return 'Mismatched signatures', 401
+
+    # Data is stored in the Fuse servers, let's consume it!
+    if request.json['status'] == 'records_submitted':
+        import_slug = request.json['import_id']
+        import_records = requests.get(f"https://fuse.flatirons.com/api/v1/imports/{import_slug}/records", headers={'Authorization': 'YOUR_API_TOKEN'}).json()
+
+        # Do what you need with the records. In this example, let's store in our database
+        # Use the implementation for your database! This is just an example
+        create_records(import_records)
+
+        # Stored and processed! Let's update the Import status inside Fuse
+        requests.put(f"https://fuse.flatirons.com/api/v1/webhooks/imports/{import_slug}", json={'status': 'records_processed'}, headers={'Authorization': 'YOUR_API_TOKEN'})
+
+    return '', 200
+
+if __name__ == '__main__':
+    app.run()
+```
+
+```java Java (Spring Boot)
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+@RestController
+public class WebhookController {
+
+    @PostMapping("/status-webhook")
+    public ResponseEntity<?> handleStatusWebhook(@RequestHeader("http_x_fuse_signature_256") String receivedSignature,
+                                                 @RequestBody Payload payload,
+                                                 HttpServletRequest request) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        // Retrieve the signature from the headers
+
+        // Compute a signature using the payload and your secret key
+        String secretKey = "your_secret_key";
+        Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secret_key = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
+        sha256_HMAC.init(secret_key);
+        String expectedSignature = bytesToHex(sha256_HMAC.doFinal(payload.toString().getBytes()));
+
+        // Compare the signatures
+        if (!receivedSignature.equals(expectedSignature)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Mismatched signatures");
+        }
+
+        // Data is stored in the Fuse servers, let's consume it!
+        if (payload.getStatus().equals("records_submitted")) {
+            String importSlug = payload.getImportId();
+            RestTemplate restTemplate = new RestTemplate();
+            Records importRecords = restTemplate.getForObject("https://fuse.flatirons.com/api/v1/imports/" + importSlug + "/records", Records.class);
+
+            // Do what you need with the records. In this example, let's store in our database
+            // Use the implementation for your database! This is just an example
+            createRecords(importRecords);
+
+            // Stored and processed! Let's update the Import status inside Fuse
+            restTemplate.postForObject("https://fuse.flatirons.com/api/v1/webhooks/imports/" + importSlug, new Status("records_processed"), Status.class);
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder result = new StringBuilder();
+        for (byte aByte : bytes) {
+            result.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+        }
+        return result.toString();
+    }
+}
+
+class Payload {
+    private String status;
+    private String importId;
+
+    // getters and setters
+}
+
+class Records {
+    // Define the structure of the records
+}
+
+class Status {
+    private String status;
+
+    // constructor, getters, and setters
+}
+```
+
+```cs C#
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
+using System.Text;
+using Newtonsoft.Json;
+using System.Net.Http;
+
+namespace Webhook.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class WebhookController : ControllerBase
+    {
+        [HttpPost("status-webhook")]
+        public IActionResult StatusWebhook([FromHeader(Name = "http_x_fuse_signature_256")] string receivedSignature, [FromBody] dynamic requestBody)
+        {
+            // Retrieve the signature from the headers
+
+            // Compute a signature using the payload and your secret key
+            string secretKey = "your_secret_key";
+            string expectedSignature = "";
+
+            using (HMACSHA256 hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey)))
+            {
+                byte[] hashValue = hmac.ComputeHash(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(requestBody)));
+                expectedSignature = BitConverter.ToString(hashValue).Replace("-", "").ToLower();
+            }
+
+            // Compare the signatures
+            if (receivedSignature != expectedSignature)
+            {
+                return Unauthorized("Mismatched signatures");
+            }
+
+            // Data is stored in the Fuse servers, let's consume it!
+            if (requestBody.status == "records_submitted")
+            {
+                string importSlug = requestBody.import_id;
+                HttpClient client = new HttpClient();
+                var importRecordsResponse = client.GetAsync($"https://fuse.flatirons.com/api/v1/imports/{importSlug}/records").Result;
+                var importRecords = importRecordsResponse.Content.ReadAsAsync<List<dynamic>>().Result;
+
+                // Do what you need with the records. In this example, let's store in our database
+                // Use the implementation for your database! This is just an example
+                CreateRecords(importRecords);
+
+                // Stored and processed! Let's update the Import status inside Fuse
+                var statusUpdate = client.PostAsJsonAsync($"https://fuse.flatirons.com/api/v1/webhooks/imports/{importSlug}", new { status = "records_processed" }).Result;
+            }
+
+            return Ok();
+        }
+
+        private class Records
+        {
+            // Define the structure of the records
+        }
+
+        private void CreateRecords(List<dynamic> records)
+        {
+            // Implementation for creating records in the database
+        }
+    }
+}
+```
+
+</CodeGroup>

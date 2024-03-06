@@ -4,40 +4,40 @@ description: "How to use Record Webhooks to get data into your system"
 ---
 
 ## Overview
-Record Webhooks are sent to your servers in real time as the user is submitting the Importer. Due to the real-time nature of Record webhooks, they should only be used if:
-- You need the data each Import in your system **before the user exits the Importer**.
-- You need to pass back-end data validation issues back to the user (note: in many cases, the [Fuse validations](/getting-started/adding-data-validations/) are sufficient and it is not necessary to use your own back-end validations)
+Record Webhooks are sent to your servers in real-time as the user is submitting the Importer. Due to the real-time nature of Record webhooks, they should only be used if:
+- You need the data for each Import in your system **before the user exits the Importer**.
+- You need to pass back-end data validation issues back to the user (note: in many cases, the [Fuse validations](/getting-started/adding-data-validations/) are sufficient and it is not necessary to use your back-end validations)
 
 Each Record Webhook sent to your server will contain a **batch** of records (up to 1000 records). An import with 10,000 records will have ten Record Webhooks sent, each with a batch of 1000 records.
 Record Webhooks send records in batches. Each batch has up to 1000 records in it.
 
 ## Record Webhook Flow
-There are three steps that you need to setup in order to get Record Webhooks working properly.
+There are three steps that you need to set up to get Record Webhooks working properly.
 
-### Step 1: Fuse send batches of records to external webhook
-Fuse will send records to your webhook in **batches** of 1000. They payload looks like this:
+### Step 1: Fuse send batches of records to the external webhook
+Fuse will send records to your webhook in **batches** of 1000. The payload looks like this:
 
-```
-  {
-    batch_slug: '77db4861-6205-4344-b234-2d3ca0f9439a',
-    import_slug: '960e938b-b3ac-4948-8713-ea84fdc72121',
-    batches_count: 10,
-    records: [],
-    complete: false
-  }
+```javascript
+{
+  batch_slug: '77db4861-6205-4344-b234-2d3ca0f9439a',
+  import_slug: '960e938b-b3ac-4948-8713-ea84fdc72121',
+  batches_count: 10,
+  records: [],
+  complete: false
+}
 ```
 
 See the [Record Webhook Format](#record-webhook-format) for more details on the payload.
 
-### Step 2: Your servers tells Fuse when each batch is processed
-Due to the nature of the record webhook flow being processed in real time as the user is submitting an import, it's important to communicate the progress of each batch to Fuse. Doing this allows Fuse to show an accurate progress bar to the end user that is submitting data.
+### Step 2: Your servers tell Fuse when each batch is processed
+Due to the nature of the record webhook flow being processed in real-time as the user is submitting an import, it's important to communicate the progress of each batch to Fuse. Doing this allows Fuse to show an accurate progress bar to the end user who is submitting data.
 
 There are two ways to tell Fuse that your system has finished processing a batch:
 
 #### Option 1: Respond to the record webhook with a `complete` status
-If you are able to process the batch of records inline in the HTTP webhook request, you can simply respond to the HTTP request with the following:
+If you can process the batch of records inline in the HTTP webhook request, you can simply respond to the HTTP request with the following:
 
-```
+```javascript
 {
   batch: {
     status: 'completed',
@@ -45,7 +45,7 @@ If you are able to process the batch of records inline in the HTTP webhook reque
       record_slug: '8971a303-8989-4b43-bb0b-dadf48bbace3',
       validation_type: 'error',
       column_name: 'email',
-      issue_description: 'Email already exists and must be unqiue.'
+      issue_description: 'Email already exists and must be unique.'
     }]
   }
 }
@@ -55,9 +55,9 @@ Details of this payload format are the same as the [Batch Status Request Format]
 
 
 #### Option 2: Send Fuse a webhook after the batch has been processed
-If you need extra time to process a webhook outside of the record webhook HTTP request, respond to the record webhook with a status of processing:
+By default, the inline request timeout is set to 15 seconds, after this, the request will be canceled. If you need extra time to process a webhook outside of the record webhook HTTP request, respond to the record webhook with a status of processing:
 
-```
+```javascript
 {
   batch: {
     status: 'processing'
@@ -67,8 +67,8 @@ If you need extra time to process a webhook outside of the record webhook HTTP r
 
 Then, you can send an HTTP request to Fuse to update the status of your batch. We call this a [Batch Status Request](#batch-status-request-format).
 
-```
-POST https://fuse.flatirons.com/api/v1/webhooks/batches/:batch_slug
+```javascript
+PUT https://fuse.flatirons.com/api/v1/webhooks/batches/:batch_slug
 Headers:
 - Authorization: Bearer {API_KEY_TOKEN}
 Body:
@@ -79,7 +79,7 @@ Body:
       record_slug: 2,
       validation_type: 'error',
       column_name: 'email',
-      issue_description: 'Email already exists and must be unqiue.'
+      issue_description: 'Email already exists and must be unique.'
     }]
   }
 }
@@ -88,10 +88,10 @@ Body:
 ### Step 3: Your server tells Fuse when all batches have been processed
 After all batches have been processed, you must tell Fuse so that we know that we are done with the Import.
 
-The final batch that we send to your record webhook will have `complete: true` set in the payload. After all batches are processed, send the following request.
+The final batch that we send to your record webhook will have the `complete: true` set in the payload. After all batches are processed, send the following request.
 
-```
-POST https://fuse.flatirons.com/api/v1/webhooks/imports/:import_slug
+```javascript
+PUT https://fuse.flatirons.com/api/v1/webhooks/imports/:import_slug
 Headers:
 - Authorization: Bearer {API_KEY_TOKEN}
 Body:
@@ -104,21 +104,21 @@ Body:
 ## Record Webhook Format
 Record webhooks are sent in POST requests to your servers with the following payload structure.
 
-```
-  {
-    batch_slug: '77db4861-6205-4344-b234-2d3ca0f9439a',
-    import_slug: '40724d56-d8e6-461f-8555-780f0d0eeae3',
-    batches_count: 10,
-    records: [],
-    complete: false
-  }
+```javascript
+{
+  batch_slug: '77db4861-6205-4344-b234-2d3ca0f9439a',
+  import_slug: '40724d56-d8e6-461f-8555-780f0d0eeae3',
+  batches_count: 10,
+  records: [],
+  complete: false
+}
 ```
 
 ## Batch Status Request Format
-Batch status requests are sent to the Fuse servers to let Fuse know when once a batch has been processed.
+Batch status requests are sent to the Fuse servers to let Fuse know when a batch has been processed.
 
-```
-POST https://fuse.flatirons.com/api/v1/webhooks/batches/:batch_slug
+```javascript
+PUT https://fuse.flatirons.com/api/v1/webhooks/batches/:batch_slug
 Headers:
 - Authorization: Bearer {API_KEY_TOKEN}
 Body:
@@ -129,8 +129,507 @@ Body:
       record_slug: 'ffd928c3-3459-43fb-a2e4-3f1b3ad5fc1f',
       validation_type: 'error',
       column_name: 'email',
-      issue_description: 'Email already exists and must be unqiue.'
+      issue_description: 'Email already exists and must be unique.'
     }]
   }
 }
 ```
+
+## Batch Processing Overview
+
+* **Retry Mechanism:** In case of a batch request failure, the Fuse server implements a retry mechanism. After the error, there is a 20-second waiting period before the server retries one more time.\
+If the retry fails, the batch will be marked as failed. If 10 batches are marked as failed, the submitting process will be automatically terminated and all the remaining batches will be marked as failed too.\
+It's important to note that if the payload itself is incorrect, no retry will occur, and the batch will be immediately marked as failed.
+
+* **Batch Size Flexibility:** Depending on the amount of data you will be submitting, the batch size may vary. Your backend must support larger payload sizes in case you expect to submit large batches.
+
+To configure your backend to support larger payloads, consider the following examples:
+
+<CodeGroup>
+
+```typescript Node.js (Nest.js / Express.js)
+const express = require("express");
+
+const app = express();
+
+app.use(bodyParser.json({ limit: "1mb" }));
+```
+
+```ruby Ruby
+# config/application.rb or config/environments/development.rb or production.rb
+
+module YourAppName
+  class Application < Rails::Application
+    # Other configurations...
+
+    # Configure the JSON payload size limit to 1MB (1 * 1024 * 1024 bytes)
+    config.middleware.insert_before(ActionDispatch::ParamsParser, "Rack::ContentLength") do |app|
+      app.config.request_parameters_parser = -> (body) {
+        json_parser = ActiveSupport::JSON.method(:decode)
+        json_parser.call(body)
+      }
+    end
+    config.middleware.use(Rack::PostBodyContentTypeParser, 'application/json', 1 * 1024 * 1024) # 1MB
+  end
+end
+```
+
+```php PHP (Laravel)
+// php.ini
+
+post_max_size = 1M
+```
+
+```python Python
+from flask import Flask, request
+
+app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB limit
+
+# Your Flask routes and other configurations...
+
+if __name__ == "__main__":
+    app.run()
+```
+
+```java Java (Spring Boot)
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.stereotype.Component;
+
+@Component
+public class TomcatCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+
+    @Override
+    public void customize(TomcatServletWebServerFactory factory) {
+        factory.setMaxHttpHeaderSize(8192); // Adjust the maximum size of the HTTP header section
+        factory.setMaxHttpPostSize(1024 * 1024); // Set the maximum payload size to 1MB (1 * 1024 * 1024 bytes)
+    }
+}
+```
+
+```cs C#
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 1024 * 1024; // 1MB limit
+        });
+
+        // Other service configurations...
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        // Middleware configurations...
+
+        app.UseRouting();
+
+        // Endpoint configurations...
+    }
+}
+```
+
+</CodeGroup>
+
+
+## Import Flow
+
+While submitting the data, the first 50% of the Import progress is related to uploading the data from the web browser to the Fuse servers. The last 50% is related to the progress of sending data between the Fuse backend and the webhook backend.
+
+If processing records in the webhook backend will take longer than 15 seconds, to process these records properly, it should be done in a background job inside the webhook server, as the request will be canceled.\
+Learn more about how to do it in the [Option 2](#option-2-send-fuse-a-webhook-after-the-batch-has-been-processed).
+
+## Record Webhook Implementation Example
+
+Find the sample code below for implementing a record webhook inline and responding with validation issues.
+
+If you need to create some issue to be shown in the UI after the webhook is processed, you can use this structure below:
+
+```javascript
+{
+  import_slug: 'f50df76a-e5b9-4784-80ba-6ef27948e2ba',
+  record_slug: 'cb28e820-8af5-4f3a-b01b-87f2eb3f5014',
+  validation_type: 'error',
+  column_name: 'id',
+  issue_description: 'An error occurred for the ID column.',
+}
+```
+
+- `import_slug` can be accessed through `req.body.import_slug`.\
+This is the identifier of the current Import.
+- `record_slug` can be accessed from the current position of the `req.body.records` array, doing `req.body.records[index].slug`.\
+This is the identifier of the current record.
+- `validation_type` can be "error" or "warning".\
+This is used to determine what type of validation will be shown in the front end.
+- `column_name` should be the exact `internal_key` you defined in your Template columns implementation that you want to attach the validation.\
+This is the unique identifier of your column.
+- `issue_description` is the message you want to show in the UI after the webhooks are processed.\
+This is the message that will be shown to the user after hovering over the field with issues.
+
+Finally, we send a response from our webhook to Fuse in the request done, sending the batch status as completed and sending the `validation_issues`.
+
+<CodeGroup>
+
+```typescript Node.js (Nest.js / Express.js)
+import { Request, Response, Router } from 'express';
+import crypto from 'crypto';
+
+const router = Router();
+
+router.post('/record-webhook', async (req: Request, res: Response) => {
+  // Retrieve the signature from the headers
+  const receivedSignature = req.headers['http_x_fuse_signature_256'] as string;
+
+  // Compute a signature using the payload and your secret key
+  const secretKey = 'your_secret_key';
+  const expectedSignature = crypto
+    .createHmac('sha256', secretKey)
+    .update(JSON.stringify(req.body))
+    .digest('hex');
+
+  // Compare the signatures
+  if (receivedSignature !== expectedSignature) {
+    return res.status(401).send('Mismatched signatures');
+  }
+
+  // Validate the data
+  const issues: {
+    import_slug: string;
+    record_slug: string;
+    validation_type: string;
+    column_name: string;
+    issue_description: string;
+  }[] = [];
+  const importSlug: string = req.body.import_slug;
+
+  for (const record of req.body.records as {
+    slug: string;
+    data: any;
+  }[]) {
+    // do something to save record.data here
+
+    // passing validation errors back to Fuse
+    if (recordDataHasIssues) {
+      issues.push({
+        import_slug: importSlug,
+        record_slug: record.slug,
+        validation_type: 'error',
+        column_name: 'first_name',
+        issue_description: 'A validation message to show to the user'
+      });
+    }
+  }
+
+  res.json({ batch: { status: 'completed', validation_issues: issues } });
+});
+```
+
+```ruby Ruby
+class WebhooksController < ApplicationController
+  require 'openssl'
+
+  def record_webhook
+    # Retrieve the signature from the headers
+    received_signature = request.headers['HTTP_X_FUSE_SIGNATURE_256']
+
+    # Compute a signature using the payload and your secret key
+    secret_key = 'your_secret_key'
+    hmac = OpenSSL::HMAC.new(secret_key, OpenSSL::Digest.new('sha256'))
+    hmac.update(request.body.read)
+    expected_signature = hmac.hexdigest
+
+    # Compare the signatures
+    if received_signature != expected_signature
+      render status: :unauthorized, json: { error: 'Mismatched signatures' }
+      return
+    end
+
+    # Validate the data
+    issues = []
+    import_slug = JSON.parse(request.body.read)['import_slug']
+
+    JSON.parse(request.body.read)['records'].each do |record|
+      # do something to save record['data'] here
+
+      # passing validation errors back to Fuse
+      if record_data_has_issues
+        issues << {
+          import_slug: import_slug,
+          record_slug: record['slug'],
+          validation_type: 'error',
+          column_name: 'first_name',
+          issue_description: 'A validation message to show to the user'
+        }
+      end
+    end
+
+    render json: { batch: { status: 'completed', validation_issues: issues } }
+  end
+end
+```
+
+```php PHP (Laravel)
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Crypt;
+
+Route::post('/record-webhook', function (Request $request) {
+    // Retrieve the signature from the headers
+    $receivedSignature = $request->header('http_x_fuse_signature_256');
+
+    // Compute a signature using the payload and your secret key
+    $secretKey = 'your_secret_key';
+    $expectedSignature = hash_hmac('sha256', $request->getContent(), $secretKey);
+
+    // Compare the signatures
+    if ($receivedSignature !== $expectedSignature) {
+        return response('Mismatched signatures', 401);
+    }
+
+    // Validate the data
+    $issues = [];
+    $importSlug = $request->input('import_slug');
+
+    foreach ($request->input('records') as $record) {
+        // do something to save $record['data'] here
+
+        // passing validation errors back to Fuse
+        if ($recordDataHasIssues) {
+            $issues[] = [
+                'import_slug' => $importSlug,
+                'record_slug' => $record['slug'],
+                'validation_type' => 'error',
+                'column_name' => 'first_name',
+                'issue_description' => 'A validation message to show to the user'
+            ];
+        }
+    }
+
+    return response()->json(['batch' => ['status' => 'completed', 'validation_issues' => $issues]]);
+});
+```
+
+```python Python
+from flask import Flask, request, jsonify
+import hashlib
+import json
+
+app = Flask(__name__)
+
+@app.route('/record-webhook', methods=['POST'])
+def record_webhook():
+    # Retrieve the signature from the headers
+    received_signature = request.headers.get('http_x_fuse_signature_256')
+
+    # Compute a signature using the payload and your secret key
+    secret_key = 'your_secret_key'
+    expected_signature = hashlib.sha256(json.dumps(request.json).encode()).hexdigest()
+
+    # Compare the signatures
+    if received_signature != expected_signature:
+        return 'Mismatched signatures', 401
+
+    # Validate the data
+    issues = []
+    import_slug = request.json['import_slug']
+
+    for record in request.json['records']:
+        # do something to save record['data'] here
+
+        # passing validation errors back to Fuse
+        if record_data_has_issues:
+            issues.append({
+                'import_slug': import_slug,
+                'record_slug': record['slug'],
+                'validation_type': 'error',
+                'column_name': 'first_name',
+                'issue_description': 'A validation message to show to the user'
+            })
+
+    return jsonify({'batch': {'status': 'completed', 'validation_issues': issues}})
+
+if __name__ == '__main__':
+    app.run()
+```
+
+```java Java (Spring Boot)
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+public class WebhookController {
+
+    @PostMapping("/record-webhook")
+    public ResponseEntity<?> handleWebhook(@RequestHeader("http_x_fuse_signature_256") String receivedSignature,
+                                           @RequestBody Payload payload,
+                                           HttpServletRequest request) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        // Retrieve the signature from the headers
+
+        // Compute a signature using the payload and your secret key
+        String secretKey = "your_secret_key";
+        Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secret_key = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
+        sha256_HMAC.init(secret_key);
+        String expectedSignature = bytesToHex(sha256_HMAC.doFinal(payload.toString().getBytes()));
+
+        // Compare the signatures
+        if (!receivedSignature.equals(expectedSignature)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Mismatched signatures");
+        }
+
+        // Validate the data
+        List<ValidationIssue> issues = new ArrayList<>();
+        String importSlug = payload.getImportSlug();
+
+        for (Record record : payload.getRecords()) {
+            // do something to save record.getData() here
+
+            // passing validation errors back to Fuse
+            if (recordDataHasIssues) {
+                issues.add(new ValidationIssue(importSlug, record.getSlug(), "error", "first_name", "A validation message to show to the user"));
+            }
+        }
+
+        return ResponseEntity.ok(new Batch("completed", issues));
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder result = new StringBuilder();
+        for (byte aByte : bytes) {
+            result.append(Integer.toString((aByte & 0xff) + 0x100, 16).substring(1));
+        }
+        return result.toString();
+    }
+}
+
+class Payload {
+    private String importSlug;
+    private List<Record> records;
+
+    // getters and setters
+}
+
+class Record {
+    private String slug;
+    private Object data;
+
+    // getters and setters
+}
+
+class ValidationIssue {
+    private String importSlug;
+    private String recordSlug;
+    private String validationType;
+    private String columnName;
+    private String issueDescription;
+
+    // constructor, getters, and setters
+}
+
+class Batch {
+    private String status;
+    private List<ValidationIssue> validationIssues;
+
+    // constructor, getters, and setters
+}
+```
+
+```cs C#
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
+using System.Text;
+using Newtonsoft.Json;
+
+namespace Webhook.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class WebhookController : ControllerBase
+    {
+        [HttpPost("record-webhook")]
+        public IActionResult RecordWebhook([FromHeader(Name = "http_x_fuse_signature_256")] string receivedSignature, [FromBody] dynamic requestBody)
+        {
+            // Retrieve the signature from the headers
+
+            // Compute a signature using the payload and your secret key
+            string secretKey = "your_secret_key";
+            string expectedSignature = "";
+
+            using (HMACSHA256 hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey)))
+            {
+                byte[] hashValue = hmac.ComputeHash(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(requestBody)));
+                expectedSignature = BitConverter.ToString(hashValue).Replace("-", "").ToLower();
+            }
+
+            // Compare the signatures
+            if (receivedSignature != expectedSignature)
+            {
+                return Unauthorized("Mismatched signatures");
+            }
+
+            // Validate the data
+            List<ValidationIssue> issues = new List<ValidationIssue>();
+            string importSlug = requestBody.import_slug;
+
+            foreach (var record in requestBody.records)
+            {
+                // do something to save record.data here
+
+                // passing validation errors back to Fuse
+                if (recordDataHasIssues)
+                {
+                    issues.Add(new ValidationIssue
+                    {
+                        import_slug = importSlug,
+                        record_slug = record.slug,
+                        validation_type = "error",
+                        column_name = "first_name",
+                        issue_description = "A validation message to show to the user"
+                    });
+                }
+            }
+
+            return Ok(new Batch { status = "completed", validation_issues = issues });
+        }
+
+        private class ValidationIssue
+        {
+            public string import_slug { get; set; }
+            public string record_slug { get; set; }
+            public string validation_type { get; set; }
+            public string column_name { get; set; }
+            public string issue_description { get; set; }
+        }
+
+        private class Batch
+        {
+            public string status { get; set; }
+            public List<ValidationIssue> validation_issues { get; set; }
+        }
+    }
+}
+```
+
+</CodeGroup>
