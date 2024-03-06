@@ -30,9 +30,9 @@
   },
   "openapi": ["/swagger.yaml"],
   "tabs": [
-    { 
+    {
       "name": "API Reference",
-      "url": "api"
+      "url": "apis"
     }
   ],
   "navigation": [
@@ -49,7 +49,7 @@
     {
       "group": "Accessing Data",
       "pages": [
-        "accessing-data/overview", 
+        "accessing-data/overview",
         "accessing-data/api-access",
         "accessing-data/record-webhooks",
         "accessing-data/status-webhooks",
@@ -82,7 +82,10 @@
     },
     {
       "group": "Extending Functionality",
-      "pages": ["extending/custom-actions", "extending/creating-your-own-column-type"]
+      "pages": [
+        "extending/custom-actions",
+        "extending/creating-your-own-column-type"
+      ]
     },
     {
       "group": "JS Implementations",
@@ -98,16 +101,13 @@
     },
     {
       "group": "Overview",
-      "pages": [
-        "api/authentication",
-        "api/pagination"
-      ]
+      "pages": ["apis/authentication", "apis/pagination"]
     },
     {
       "group": "Resources",
       "pages": [
-        "api/resources/imports/list-imports",
-        "api/resources/records/import-records"
+        "apis/resources/imports/list-imports",
+        "apis/resources/records/import-records"
       ]
     }
   ],
