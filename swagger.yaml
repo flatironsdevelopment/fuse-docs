@@ -1,0 +1,164 @@
+---
+openapi: 3.0.1
+info:
+  title: API V1
+  version: v1
+paths:
+  "/api/v1/imports/{import_slug}/records":
+    get:
+      summary: Import Records
+      tags:
+      - Records
+      security:
+      - bearer: []
+      parameters:
+      - name: import_slug
+        in: path
+        required: true
+        description: Import Slug
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: The page number for pagination
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: Number of records per page, maximum of 100
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: records found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        slug:
+                          type: string
+                          format: uuid
+                          description: The slug of the record
+                        data:
+                          type: object
+                          additionalProperties: {}
+                          description: An object containing record data
+                        created_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp of creation for the record
+                        updated_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp of creation for the record
+                        sort:
+                          type: integer
+                          description: The sort order
+                      required:
+                      - slug
+                      - data
+                      - created_at
+                      - updated_at
+                      - sort
+                description: A paginated list of records for a particular import
+                required:
+                - data
+        '404':
+          description: import not found
+        '401':
+          description: unauthorized
+  "/api/v1/imports":
+    get:
+      summary: List Imports
+      tags:
+      - imports
+      security:
+      - bearer: []
+      parameters:
+      - name: page
+        in: query
+        description: The page number for pagination
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        description: Number of records per page, maximum of 100
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: filtered imports found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    description: A paginated list of imports
+                    items:
+                      type: object
+                      properties:
+                        slug:
+                          type: string
+                          format: uuid
+                          description: The slug of the import
+                        row_count:
+                          type: integer
+                          description: The number of rows in the import
+                        created_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp of creation for the import
+                        updated_at:
+                          type: string
+                          format: date-time
+                          description: The timestamp of creation for the import
+                        status:
+                          type: string
+                          enum:
+                          - created
+                          - records_submitting
+                          - records_submitted
+                          - records_processed
+                          description: The status of the import
+                        template:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            slug:
+                              type: string
+                              format: uuid
+                          required:
+                          - name
+                          - slug
+                      required:
+                      - slug
+                      - row_count
+                      - template
+                      - created_at
+                      - updated_at
+                      - status
+        '401':
+          description: unauthorized
+servers:
+- url: https://fuse.flatirons.com
+  variables:
+    defaultHost:
+      default: www.example.com
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer

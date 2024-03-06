@@ -28,22 +28,33 @@
     "name": "Fuse Dashboard",
     "url": "https://fuse.flatirons.com"
   },
+  "openapi": ["/swagger.yaml"],
+  "tabs": [
+    { 
+      "name": "API Reference",
+      "url": "api"
+    }
+  ],
   "navigation": [
     {
-      "group": "Quickstart Examples",
-      "pages": ["quickstart-examples/quickstart-examples"]
-    },
-    {
-      "group": "Getting Started",
+      "group": "Importer Setup",
       "pages": [
         "getting-started/overview",
-        "getting-started/installation",
-        "getting-started/creating-an-importer",
-        "getting-started/launching-an-importer",
         "getting-started/adding-columns",
         "getting-started/adding-data-validations",
         "getting-started/adding-data-transformations",
-        "getting-started/submitting-to-a-backend"
+        "getting-started/embedding"
+      ]
+    },
+    {
+      "group": "Accessing Data",
+      "pages": [
+        "accessing-data/overview", 
+        "accessing-data/api-access",
+        "accessing-data/record-webhooks",
+        "accessing-data/status-webhooks",
+        "accessing-data/webhook-security",
+        "accessing-data/incognito-mode"
       ]
     },
     {
@@ -84,6 +95,20 @@
     {
       "group": "More to Love",
       "pages": ["more-to-love/translations-i18n"]
+    },
+    {
+      "group": "Overview",
+      "pages": [
+        "api/authentication",
+        "api/pagination"
+      ]
+    },
+    {
+      "group": "Resources",
+      "pages": [
+        "api/resources/imports/list-imports",
+        "api/resources/records/import-records"
+      ]
     }
   ],
   "footerSocials": {

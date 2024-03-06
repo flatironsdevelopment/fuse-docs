@@ -1,0 +1,29 @@
+---
+title: "Pagination"
+description: "How pagination works in the Fuse API"
+---
+
+Pagination endpoints come with a `pagination` payload. The payload contains various pieces of metadata about the resource:
+- **current**: The current page
+- **previous**: The previous page
+- **next**: The next page
+- **limit**: The maximum records per page
+- **total_pages**: The total numbers of pages
+- **total_count**: The total number of records
+
+## Example
+```
+{
+  "data": [
+    // an array of the resource you are accessing
+  ],
+  "paginiation": {
+    "current": 1,
+    "previous": null,
+    "next": 2,
+    "limit": 100,
+    "total_pages": 1000,
+    "total_count": 10000
+  }
+}
+```
