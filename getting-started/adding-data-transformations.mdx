@@ -4,10 +4,7 @@ description: "Transformations allow you to format data and manipulate schemas."
 ---
 
 <Note>
-**Each column type in Fuse has built-in data transformations.** There is a lot you can do out of the box.
-
-Because each column type has different built-in data transformations, you should **refer to the documentation of a specific column type** to see the available options.
-
+ Each column type in Fuse has built-in transformations available. You refer to the documentation of a specific column type to see the available options.
 </Note>
 
 When the built-in transformations are not enough for you, you can create your own custom data transformations using the `formatRecord` hook.
@@ -18,9 +15,9 @@ The `formatRecord` hook is called for every row in the importer. It allows you t
 
 Here are some samples of things you might want to do with this hook:
 
+- Combine "first_name" and "last_name" into a "full_name" column.
 - Capitalize all of the values in a column.
 - Prepend "https://" to all of the URLs in a column.
-- Automatically combine multiple uploaded fields into one column.
 
 The `record` passed to this hook is an object that represents a single row in the importer. You can access the properties of the record using the `internal_key` of each column.
 

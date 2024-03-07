@@ -116,6 +116,20 @@ The example below illustrates both frontend and backend validations.
         return { errors: errors, warnings: {} };
       };
 
+      // data transformations
+      importer.formatRecord = (record) => {
+        const newRecord = { ...record };
+
+        // capitalize the first letter in first_name
+        if (typeof newRecord.first_name === "string") {
+          newRecord.first_name =
+            newRecord.first_name.charAt(0).toUpperCase() +
+            newRecord.first_name.slice(1);
+        }
+
+        return newRecord;
+      };
+
       window.showFuseImporter = () => {
         importer.show();
       };

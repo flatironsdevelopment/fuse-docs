@@ -1,13 +1,10 @@
 ---
 title: "Adding Validations"
-description: "Data validations allow you to provide error or warning messages to users when something is improperly formatted."
+description: "Validations allow you to provide error or warning messages to users when data is improperly formatted."
 ---
 
 <Note>
-  **Each column type in Fuse has built-in data validations.** There is a lot you can do out of the box.
-
-Because each column type has different built-in data transformations, you should **refer to the documentation of a specific column type** to see the available options.
-
+ Each column type in Fuse has built-in validations. You refer to the documentation of a specific column type to see the available options.
 </Note>
 
 When the built-in data validations are insufficient, you can create custom front-end data validations using the `onValidateRecord` hook on your importer.
@@ -18,11 +15,9 @@ The `onValidationRecord` hook is called for each row (record) in the importer. I
 
 The `record` object passed to `onValidateRecord` contains all of the values for a single row in the importer. You can access values in the record object using the `internal_key `of each column in your importer.
 
-The `onValidateRecord` hook returns an errors object with two properties: `errors` and `warnings.`
-
-Errors block the user from submitting the importer. These are items that must be fixed.
-
-Warnings provide a warning message to the user about potential issues. However, a user can submit the importer with warnings present.
+The `onValidateRecord` hook returns an errors object with two properties: 
+- `errors` block the user from submitting an import. These are items that must be fixed.
+- `warnings` provide a warning message to the user about potential issues. However, a user can submit an import with warnings present.
 
 ## Example
 

@@ -3,29 +3,21 @@ title: "Overview"
 description: "An overview of how to get data from Fuse into your own system"
 ---
 
-There are two recommended ways to get data from Fuse into your system: 
-- the API (pull)
-- Record webhooks (push)
-
-If your importer has Incognito mode enabled, the API and webhooks are unavailable. See [instructions](/accessing-data/incognito-mode) for accessing data with Incognito enabled.
+There are three ways to get data from Fuse into your system: 
+- **API (pull)**: Recommended for most use cases.
+- **Record Webhooks (push)**: Recommended only when your system needs to support backend validations.
+- **Incognito Mode (manual submission)**: If for some reason your organization is unable to send data to Fuse servers, you can turn on Incognito Mode and submit data using the onSubmit hook.
 
 ## **API Access**
 
-For many situations, accessing import data [via the API](/accessing-data/api-access) is the best way to get data out of Fuse and into your own database.
+For most situations, accessing import data [via the API](/accessing-data/api-access) is the best way to get data out of Fuse and into your own database.
 
 API access can be used in conjunction with [Status Webhooks](/accessing-data/status-webhooks) to get into your system right after it has been uploaded.
 
-### **When to use the API**
-
-The API is typically the best option if you do not need the data in your system at the time when the user closes out of their Importer.
-
 ## **Record Webhooks**
 
-[Record Webhooks](/accessing-data/record-webhooks) are processed **in real time** as the user is submitting an import. 
+[Record Webhooks](/accessing-data/record-webhooks) are processed **in real time** as the user is submitting an import. Record Webhooks are the recommended method if your system needs to pass backend validation errors back to the importer. Note that Accepting large amounts of data by webhook can be more complex than pulling data into your system by API.
 
-### **When to use Record Webhooks**
+## **Incognito Mode**
 
-Record webhooks are best in two scenarios:
-
-1. When your system needs data added to your database in real-time as the user imports it
-2. When you wish to communicate backend data validation issues to the user
+[Incognito Mode](/accessing-data/incognito-mode) should only be used if your organization is unable to send data to Fuse servers (despite our exhaustive security efforts). When Incognito Mode is enabled, you can use the onSubmit hook to submit data directly to your servers, bypassing the submission to Fuse.
