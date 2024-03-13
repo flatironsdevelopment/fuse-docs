@@ -54,7 +54,8 @@
         "accessing-data/record-webhooks",
         "accessing-data/status-webhooks",
         "accessing-data/webhook-security",
-        "accessing-data/incognito-mode"
+        "accessing-data/incognito-mode",
+        "accessing-data/tracking-uploaded-records"
       ]
     },
     {
