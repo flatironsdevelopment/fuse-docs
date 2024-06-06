@@ -11,20 +11,14 @@ import React from "react";
 
 const App = () => {
   const showImporter = () => {
-    const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
-    const templateId = "YOUR TEMPLATE ID";
+    const importer = new FuseImporter();
 
-    if (
-      organizationApiKey.indexOf("YOUR") !== -1 ||
-      templateId.indexOf("YOUR") !== -1
-    ) {
-      window.confirm(
-        "You need to configure your organization api key and template id."
-      );
-      return;
-    }
+    // This method should call your backend to get a importer session token
+    // For more details, refer to the documentation: https://fuse-docs.flatirons.com/getting-started/embedding#launching-an-importer
+    importer.getSessionToken = async () => {
+      // return a session token
+    };
 
-    const importer = new FuseImporter(organizationApiKey, templateId);
 
     importer.onSubmit = async (records) => {
       return {

@@ -49,81 +49,82 @@ Embedding Fuse in your website is simple. There are two steps:
 
 ## Launching an Importer
 
-The `show` function does exactly what it sounds like; it displays the importer. Ensure you have initialized the importer properly beforehand. Use this function like so:
+To display the Fuse Importer, you need to use the `getSessionToken` method for secure authentication. This involves setting up your backend to handle session token requests and integrating it with your frontend.
 
-Setup the importer in JavaScript:
+#### General Steps:
+
+1. **Backend Setup**: Create an endpoint that calls the Fuse API to obtain a session token. This endpoint should use your `apiToken` for authentication and include the `templateSlug` and optional metadata.
+
+2. **Frontend Setup**: Define the `getSessionToken` method to fetch the session token from your backend. Use this token to initialize and display the importer.
+
+#### Example for Node.js
+
+##### Backend (Node.js with Express):
 ```javascript
-// set these from your Fuse account
-const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
-const importerId = "YOUR IMPORTER ID";
+const express = require('express');
+const axios = require('axios');
+const app = express();
+app.use(express.json());
 
-const importerOptions = {
-  modal: false // whether or not to show the importer in a modal
+app.post('/api/getSessionToken', async (req, res) => {
+  const { templateSlug, metadata } = req.body;
+  try {
+    const response = await axios.post('https://fuse.flatirons.com/api/v1/importer/sessions', {
+      templateSlug,
+      metadata
+    }, {
+      headers: { 'Authorization': `Bearer YOUR_API_TOKEN` }
+    });
+    res.json({ sessionToken: response.data.sessionToken });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to get session token' });
+  }
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
+```
+
+For more information on the `/api/v1/importer/sessions` endpoint, refer to the [Import Session API documentation](/apis/resources/import-session).
+
+For information on obtaining the `apiToken`, see the [Authentication documentation](/apis/authentication).
+
+##### Frontend (React):
+```javascript
+import FuseImporter from 'fuse-importer';
+import React from 'react';
+
+const App = () => {
+  const importer = new FuseImporter();
+
+  importer.getSessionToken = async () => {
+    const response = await fetch('/api/getSessionToken', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ templateSlug: 'YOUR_TEMPLATE_SLUG', metadata: {} })
+    });
+    const data = await response.json();
+    return data.sessionToken;
+  };
+
+  const showImporter = () => {
+    importer.show();
+  };
+
+  return (
+    <button onClick={showImporter}>Show Importer</button>
+  );
 };
 
-const importer = new FuseImporter(organizationApiKey, importerId, importerOptions);
-
-window.showFuseImporter = () => {
-  importer.show();
-}
+export default App;
 ```
 
-To open the importer:
-```HTML
-<button onclick="javascript:showFuseImporter()">Show Importer</button>
-```
+**Note**: Metadata should be in JSON format and will be associated with the importer session. This can be useful for tracking events or user activity.
 
-## Full HTML Example Code
+#### Without a Backend
 
-The example below illustrates both frontend and backend validations.
+If you don't have a backend, you can use the constructor method directly:
 
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <script
-      type="text/javascript"
-      src="https://unpkg.com/fuse-importer@latest"
-    ></script>
-    <script type="text/javascript">
-      const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
-      const importerId = "YOUR IMPORTER ID";
-      const importer = new FuseImporter(organizationApiKey, importerId);
-
-      // frontend validations
-      importer.onValidateRecord = async (record) => {
-        const errors = {};
-
-        // force emails to include Gmail
-        if (!record.email?.includes("gmail")) {
-          errors["email"] = "Email must from gmail";
-        }
-
-        return { errors: errors, warnings: {} };
-      };
-
-      // data transformations
-      importer.formatRecord = (record) => {
-        const newRecord = { ...record };
-
-        // capitalize the first letter in first_name
-        if (typeof newRecord.first_name === "string") {
-          newRecord.first_name =
-            newRecord.first_name.charAt(0).toUpperCase() +
-            newRecord.first_name.slice(1);
-        }
-
-        return newRecord;
-      };
-
-      window.showFuseImporter = () => {
-        importer.show();
-      };
-    </script>
-  </head>
-
-  <body>
-    <button onclick="javascript:showFuseImporter()">Show Importer</button>
-  </body>
-</html>
+```javascript
+const importer = new FuseImporter(organizationApiKey, templateSlug, importerOptions);
+importer.show();
 ```

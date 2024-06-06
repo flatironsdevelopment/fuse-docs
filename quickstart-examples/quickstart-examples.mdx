@@ -21,9 +21,13 @@ This provides a quick example of a path for the importer where all records are v
       src="https://unpkg.com/fuse-importer@latest"
     ></script>
     <script type="text/javascript">
-      const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
-      const importerId = "YOUR IMPORTER ID";
-      const importer = new FuseImporter(organizationApiKey, importerId);
+      const importer = new FuseImporter();
+
+      // This method should call your backend to get a importer session token
+      // For more details, refer to the documentation: https://fuse-docs.flatirons.com/getting-started/embedding#launching-an-importer
+      importer.getSessionToken = async () => {
+        // return a session token
+      };
 
       importer.onValidateRecord = async (record) => {
         // return no frontend validation errors or warnings
@@ -39,15 +43,6 @@ This provides a quick example of a path for the importer where all records are v
       };
 
       window.showFuseImporter = () => {
-        if (
-          organizationApiKey.indexOf("YOUR") !== -1 ||
-          importerId.indexOf("YOUR") !== -1
-        ) {
-          window.confirm(
-            "You need to configure your organization api key and importer id."
-          );
-          return;
-        }
         importer.show();
       };
     </script>
@@ -72,9 +67,13 @@ The example below illustrates both frontend and backend validations.
       src="https://unpkg.com/fuse-importer@latest"
     ></script>
     <script type="text/javascript">
-      const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
-      const importerId = "YOUR IMPORTER ID";
-      const importer = new FuseImporter(organizationApiKey, importerId);
+      const importer = new FuseImporter();
+
+      // This method should call your backend to get a importer session token
+      // For more details, refer to the documentation: https://fuse-docs.flatirons.com/getting-started/embedding#launching-an-importer
+      importer.getSessionToken = async () => {
+        // return a session token
+      };
 
       // frontend validations
       importer.onValidateRecord = async (record) => {
@@ -109,15 +108,6 @@ The example below illustrates both frontend and backend validations.
       };
 
       window.showFuseImporter = () => {
-        if (
-          organizationApiKey.indexOf("YOUR") !== -1 ||
-          importerId.indexOf("YOUR") !== -1
-        ) {
-          window.confirm(
-            "You need to configure your organization api key and importer id."
-          );
-          return;
-        }
         importer.show();
       };
     </script>

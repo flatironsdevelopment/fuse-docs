@@ -15,20 +15,14 @@ import FuseImporter from "fuse-importer";
 })
 export class AppComponent {
   public showImporter() {
-    const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
-    const templateId = "YOUR TEMPLATE ID";
 
-    if (
-      organizationApiKey.indexOf("YOUR") !== -1 ||
-      templateId.indexOf("YOUR") !== -1
-    ) {
-      window.confirm(
-        "You need to configure your organization api key and template id."
-      );
-      return;
-    }
+    const importer = new FuseImporter();
 
-    const importer = new FuseImporter(organizationApiKey, templateId);
+    // This method should call your backend to get a importer session token
+    // For more details, refer to the documentation: https://fuse-docs.flatirons.com/getting-started/embedding#launching-an-importer
+    importer.getSessionToken = async () => {
+      // return a session token
+    };
 
     importer.onSubmit = async (records) => {
       return {

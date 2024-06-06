@@ -28,7 +28,14 @@ The `addColumn` function accepts an object as an argument.
 <Tabs>
   <Tab title="JavaScript">
     ```javascript
-      const importer = new FuseImporter(organizationApiKey, importerId);
+      const importer = new FuseImporter();
+
+      // This method should call your backend to get a importer session token
+      // For more details, refer to the documentation: https://fuse-docs.flatirons.com/getting-started/embedding#launching-an-importer
+      importer.getSessionToken = async () => {
+        // return a session token
+      };
+
 
       const validations = [
         {
@@ -63,7 +70,13 @@ The `addColumn` function accepts an object as an argument.
   </Tab>
   <Tab title="TypeScript">
     ```typescript
-      const importer = new FuseImporter(organizationApiKey, importerId);
+      const importer = new FuseImporter();
+
+      // This method should call your backend to get a importer session token
+      // For more details, refer to the documentation: https://fuse-docs.flatirons.com/getting-started/embedding#launching-an-importer
+      importer.getSessionToken = async () => {
+        // return a session token
+      };
 
       // ColumnValidations should be imported from "fuse-importer"
       const validations: ColumnValidations<"float">[] = [
