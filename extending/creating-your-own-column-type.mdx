@@ -11,7 +11,13 @@ If the built-in column types are not enough, you can define your own data struct
 // matches formats like $10
 const currencyRegex = /\$[0-9]*/;
 
-const importer = new FuseImporter(organizationApiKey, importerId);
+const importer = new FuseImporter();
+
+// This method should call your backend to get a importer session token
+// For more details, refer to the documentation: https://fuse-docs.flatirons.com/getting-started/embedding#launching-an-importer
+importer.getSessionToken = async () => {
+  // return a session token
+};
 
 importer.addColumn({
   internal_key: "total_charge",

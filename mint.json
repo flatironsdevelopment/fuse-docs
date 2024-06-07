@@ -106,6 +106,7 @@
     {
       "group": "Resources",
       "pages": [
+        "apis/resources/import-session",
         "apis/resources/imports/list-imports",
         "apis/resources/records/import-records"
       ]
