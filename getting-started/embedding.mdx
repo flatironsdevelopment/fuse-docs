@@ -122,9 +122,21 @@ export default App;
 
 #### Without a Backend
 
-If you don't have a backend, you can use the constructor method directly:
+If you don't have a backend, you can use the `getFuseClientSideToken` function provided by the `fuse-importer` package:
 
 ```javascript
-const importer = new FuseImporter(organizationApiKey, templateSlug, importerOptions);
+import FuseImporter, { getFuseClientSideToken } from "fuse-importer";
+
+const importer = new FuseImporter();
+
+importer.getSessionToken = getFuseClientSideToken({
+  importer_id: "YOUR_IMPORTER_ID",
+  api_key: "YOUR_API_KEY"
+});
+
 importer.show();
 ```
+
+Replace `YOUR_IMPORTER_ID` and `YOUR_API_KEY` with your actual importer ID and API key.
+
+**Note**: While this method is simpler, it's less secure as it exposes your API key in the client-side code. Use this approach only for testing or in trusted environments. For production use, we recommend implementing a backend solution as described in the previous section.
