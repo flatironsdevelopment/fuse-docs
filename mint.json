@@ -92,7 +92,7 @@
       "group": "JS Implementations",
       "pages": [
         "js-implementations/angular-csv-importer",
-        "js-implementations/react.js-csv-importer",
+        "js-implementations/react-csv-importer",
         "js-implementations/vue.js-csv-importer"
       ]
     },

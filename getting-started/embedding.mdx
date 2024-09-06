@@ -49,94 +49,160 @@ Embedding Fuse in your website is simple. There are two steps:
 
 ## Launching an Importer
 
-To display the Fuse Importer, you need to use the `getSessionToken` method for secure authentication. This involves setting up your backend to handle session token requests and integrating it with your frontend.
+The `show` function does exactly what it sounds like; it displays the importer. Ensure you have initialized the importer properly beforehand. Use this function like so:
 
-#### General Steps:
+<Tabs>
+  <Tab title="JavaScript (Simple)">
+    ```javascript
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
 
-1. **Backend Setup**: Create an endpoint that calls the Fuse API to obtain a session token. This endpoint should use your `apiToken` for authentication and include the `templateSlug` and optional metadata.
+    // Initialize the importer
+    const importer = new FuseImporter();
 
-2. **Frontend Setup**: Define the `getSessionToken` method to fetch the session token from your backend. Use this token to initialize and display the importer.
-
-#### Example for Node.js
-
-##### Backend (Node.js with Express):
-```javascript
-const express = require('express');
-const axios = require('axios');
-const app = express();
-app.use(express.json());
-
-app.post('/api/getSessionToken', async (req, res) => {
-  const { templateSlug, metadata } = req.body;
-  try {
-    const response = await axios.post('https://fuse.flatirons.com/api/v1/importer/sessions', {
-      templateSlug,
-      metadata
-    }, {
-      headers: { 'Authorization': `Bearer YOUR_API_TOKEN` }
+    // See https://fuse-docs.flatirons.com/getting-started/sessions
+    importer.getSessionToken = getFuseClientSideToken({
+      importer_id: 'YOUR_IMPORTER_ID',
+      api_key: 'YOUR_API_KEY'
     });
-    res.json({ sessionToken: response.data.sessionToken });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to get session token' });
-  }
-});
 
-app.listen(3000, () => console.log('Server running on port 3000'));
-```
-
-For more information on the `/api/v1/importer/sessions` endpoint, refer to the [Import Session API documentation](/apis/resources/import-session).
-
-For information on obtaining the `apiToken`, see the [Authentication documentation](/apis/authentication).
-
-##### Frontend (React):
-```javascript
-import FuseImporter from 'fuse-importer';
-import React from 'react';
-
-const App = () => {
-  const importer = new FuseImporter();
-
-  importer.getSessionToken = async () => {
-    const response = await fetch('/api/getSessionToken', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ templateSlug: 'YOUR_TEMPLATE_SLUG', metadata: {} })
-    });
-    const data = await response.json();
-    return data.sessionToken;
-  };
-
-  const showImporter = () => {
     importer.show();
-  };
+    ```
+  </Tab>
 
-  return (
-    <button onClick={showImporter}>Show Importer</button>
-  );
-};
+  <Tab title="HTML + JS (Full)">
+    ```html
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <script
+          type="text/javascript"
+          src="https://unpkg.com/fuse-importer@latest"
+        ></script>
+        <script type="text/javascript">
+          const importer = new FuseImporter();
 
-export default App;
-```
+          // See https://fuse-docs.flatirons.com/getting-started/sessions
+          importer.getSessionToken = getFuseClientSideToken({
+            importer_id: 'YOUR_IMPORTER_ID',
+            api_key: 'YOUR_API_KEY'
+          });
 
-**Note**: Metadata should be in JSON format and will be associated with the importer session. This can be useful for tracking events or user activity.
+          // Frontend validations
+          importer.onValidateRecord = async (record) => {
+            const errors = {};
 
-#### Without a Backend
+            // Validate that the email includes "gmail"
+            if (!record.email?.includes("gmail")) {
+              errors["email"] = "Email must be from Gmail";
+            }
 
-If you don't have a backend, you can use the `getFuseClientSideToken` function provided by the `fuse-importer` package:
+            return { errors: errors, warnings: {} };
+          };
 
-```javascript
-import FuseImporter, { getFuseClientSideToken } from "fuse-importer";
+          // Data transformations
+          importer.formatRecord = (record) => {
+            const newRecord = { ...record };
 
-const importer = new FuseImporter();
+            // Capitalize the first letter of the first name
+            if (typeof newRecord.first_name === "string") {
+              newRecord.first_name =
+                newRecord.first_name.charAt(0).toUpperCase() +
+                newRecord.first_name.slice(1);
+            }
 
-importer.getSessionToken = getFuseClientSideToken({
-  importer_id: "YOUR_IMPORTER_ID",
-  api_key: "YOUR_API_KEY"
-});
+            return newRecord;
+          };
 
-importer.show();
-```
+          window.showFuseImporter = () => {
+            importer.show();
+          };
+        </script>
+      </head>
 
-Replace `YOUR_IMPORTER_ID` and `YOUR_API_KEY` with your actual importer ID and API key.
+      <body>
+        <button onclick="javascript:showFuseImporter()">Show Importer</button>
+      </body>
+    </html>
+    ```
+  </Tab>
 
-**Note**: While this method is simpler, it's less secure as it exposes your API key in the client-side code. Use this approach only for testing or in trusted environments. For production use, we recommend implementing a backend solution as described in the previous section.
+  <Tab title="React">
+    ```javascript
+    import React from 'react';
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
+
+    const App = () => {
+      const importer = new FuseImporter();
+
+      // See https://fuse-docs.flatirons.com/getting-started/sessions
+      importer.getSessionToken = getFuseClientSideToken({
+        importer_id: 'YOUR_IMPORTER_ID',
+        api_key: 'YOUR_API_KEY'
+      });
+
+      const showImporter = () => {
+        importer.show();
+      };
+
+      return (
+        <button onClick={showImporter}>Show Importer</button>
+      );
+    };
+
+    export default App;
+    ```
+  </Tab>
+
+  <Tab title="Angular">
+    ```typescript
+    import { Component } from '@angular/core';
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
+
+    @Component({
+      selector: 'app-root',
+      template: `<button (click)="showImporter()">Show Importer</button>`,
+    })
+    export class AppComponent {
+      showImporter() {
+        const importer = new FuseImporter();
+
+        // See https://fuse-docs.flatirons.com/getting-started/sessions
+        importer.getSessionToken = getFuseClientSideToken({
+          importer_id: 'YOUR_IMPORTER_ID',
+          api_key: 'YOUR_API_KEY'
+        });
+
+        importer.show();
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="Vue">
+    ```javascript
+    <template>
+      <button @click="showImporter">Show Importer</button>
+    </template>
+
+    <script>
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
+
+    export default {
+      methods: {
+        showImporter() {
+          const importer = new FuseImporter();
+
+          // See https://fuse-docs.flatirons.com/getting-started/sessions
+          importer.getSessionToken = getFuseClientSideToken({
+            importer_id: 'YOUR_IMPORTER_ID',
+            api_key: 'YOUR_API_KEY'
+          });
+
+          importer.show();
+        }
+      }
+    };
+    </script>
+    ```
+  </Tab>
+</Tabs>
