@@ -8,7 +8,9 @@ description: ""
 
 ### Overview
 
-A **session** in Fuse allows you to launch the importer by generating a session token, either on your backend for enhanced security or directly in the frontend for simpler implementations. Depending on your needs, you can choose between two options:
+A **session** in Fuse allows you to launch the importer by generating a session token. You can store metadata such as user IDs inside of a session so that when you retrieve imports from the Fuse API, you know which user in your system to associate them with.
+
+Depending on your needs, you can choose between two options:
 
 1.  **Client-Side Sessions**: A simpler method that generates the session token directly in the frontend, though it exposes your API key and should only be used in trusted or testing environments.
 
