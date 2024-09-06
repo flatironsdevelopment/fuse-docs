@@ -6,15 +6,25 @@ info:
 paths:
   "/api/v1/importer/sessions":
     post:
-      summary: Importer session
+      summary: Create Session
       description: Use this endpoint to generate an importer session token based on a template slug. The session token should be used as part of creating a fuse importer instance.
       tags:
-      - Importer Sessions
+      - Create Session
       security:
       - bearer: []
       responses:
         '201':
           description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token for the importer session
+                required:
+                - token
         '422':
           description: unprocessable entity
         '404':

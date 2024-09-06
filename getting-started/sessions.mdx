@@ -151,7 +151,7 @@ This is the recommended approach for production environments, as it securely han
         }, {
           headers: { 'Authorization': `Bearer YOUR_API_TOKEN` }
         });
-        res.json({ sessionToken: response.data.sessionToken });
+        res.json({ token: response.data.token });
       } catch (error) {
         res.status(500).json({ error: 'Failed to get session token' });
       }
@@ -178,11 +178,11 @@ This is the recommended approach for production environments, as it securely han
       http.use_ssl = true
 
       request = Net::HTTP::Post.new(uri.path, { 'Authorization' => 'Bearer YOUR_API_TOKEN', 'Content-Type' => 'application/json' })
-      request.body = { template_slug: template_slug, meta: meta }.to_json
+      request.body = { template_slug: templateSlug, meta: meta }.to_json
 
       response = http.request(request)
       if response.code == '200'
-        { sessionToken: JSON.parse(response.body)['sessionToken'] }.to_json
+        { token: JSON.parse(response.body)['token'] }.to_json
       else
         status 500
         { error: 'Failed to get session token' }.to_json
@@ -213,7 +213,7 @@ This is the recommended approach for production environments, as it securely han
         }
         try:
             response = requests.post('https://fuse.flatirons.com/api/v1/importer/sessions', json=payload, headers=headers)
-            return jsonify({'sessionToken': response.json().get('sessionToken')})
+            return jsonify({'token': response.json().get('token')})
         except requests.exceptions.RequestException as e:
             return jsonify({'error': 'Failed to get session token'}), 500
 
@@ -260,7 +260,7 @@ This is the recommended approach for production environments, as it securely han
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 Map<String, String> result = new HashMap<>();
-                result.put("sessionToken", (String) response.getBody().get("sessionToken"));
+                result.put("token", (String) response.getBody().get("token"));
                 return result;
             } else {
                 throw new RuntimeException("Failed to get session token");
@@ -287,7 +287,7 @@ This is the recommended approach for production environments, as it securely han
         ]);
 
         if ($response->successful()) {
-            return response()->json(['sessionToken' => $response['sessionToken']]);
+            return response()->json(['token' => $response['token']]);
         } else {
             return response()->json(['error' => 'Failed to get session token'], 500);
         }
@@ -310,7 +310,7 @@ This is the recommended approach for production environments, as it securely han
         headers: { 'Content-Type': 'application/json' },
       });
       const data = await response.json();
-      return data.sessionToken;
+      return data.token;
     };
 
     importer.show();
@@ -331,7 +331,7 @@ This is the recommended approach for production environments, as it securely han
           headers: { 'Content-Type': 'application/json' },
         });
         const data = await response.json();
-        return data.sessionToken;
+        return data.token;
       };
 
       const showImporter = () => {
@@ -364,7 +364,7 @@ This is the recommended approach for production environments, as it securely han
             headers: { 'Content-Type': 'application/json' }
           });
           const data = await response.json();
-          return data.sessionToken;
+          return data.token;
         },
         showImporter() {
           const importer = new FuseImporter();
@@ -394,7 +394,7 @@ This is the recommended approach for production environments, as it securely han
         return this.http.post('/api/getSessionToken', {
           templateSlug: 'YOUR_TEMPLATE_SLUG',
           metadata: {}
-        }).toPromise().then((res: any) => res.sessionToken);
+        }).toPromise().then((res: any) => res.token);
       }
 
       showImporter() {
