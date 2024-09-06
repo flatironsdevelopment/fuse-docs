@@ -142,12 +142,12 @@ This is the recommended approach for production environments, as it securely han
 
     app.post('/api/getSessionToken', async (req, res) => {
       const { templateSlug } = req.body;
-      const metadata = { user_id: 123 };
+      const meta = { user_id: 123 };
 
       try {
         const response = await axios.post('https://fuse.flatirons.com/api/v1/importer/sessions', {
-          templateSlug,
-          metadata
+          template_slug: templateSlug,
+          meta
         }, {
           headers: { 'Authorization': `Bearer YOUR_API_TOKEN` }
         });
@@ -171,14 +171,14 @@ This is the recommended approach for production environments, as it securely han
       content_type :json
       request_body = JSON.parse(request.body.read)
       template_slug = request_body['templateSlug']
-      metadata = { user_id: 123 }
+      meta = { user_id: 123 }
 
       uri = URI('https://fuse.flatirons.com/api/v1/importer/sessions')
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
 
       request = Net::HTTP::Post.new(uri.path, { 'Authorization' => 'Bearer YOUR_API_TOKEN', 'Content-Type' => 'application/json' })
-      request.body = { templateSlug: template_slug, metadata: metadata }.to_json
+      request.body = { template_slug: template_slug, meta: meta }.to_json
 
       response = http.request(request)
       if response.code == '200'
@@ -202,14 +202,14 @@ This is the recommended approach for production environments, as it securely han
     def get_session_token():
         data = request.json
         template_slug = data.get('templateSlug')
-        metadata = { 'user_id': 123 }
+        meta = { 'user_id': 123 }
 
         headers = {
             'Authorization': 'Bearer YOUR_API_TOKEN'
         }
         payload = {
-            'templateSlug': template_slug,
-            'metadata': metadata
+            'template_slug': template_slug,
+            'meta': meta
         }
         try:
             response = requests.post('https://fuse.flatirons.com/api/v1/importer/sessions', json=payload, headers=headers)
@@ -242,8 +242,8 @@ This is the recommended approach for production environments, as it securely han
         @PostMapping("/api/getSessionToken")
         public Map<String, String> getSessionToken(@RequestBody Map<String, Object> requestBody) {
             String templateSlug = (String) requestBody.get("templateSlug");
-            Map<String, Object> metadata = new HashMap<>();
-            metadata.put("user_id", 123);
+            Map<String, Object> meta = new HashMap<>();
+            meta.put("user_id", 123);
 
             RestTemplate restTemplate = new RestTemplate();
             String url = "https://fuse.flatirons.com/api/v1/importer/sessions";
@@ -252,8 +252,8 @@ This is the recommended approach for production environments, as it securely han
             headers.set("Authorization", "Bearer YOUR_API_TOKEN");
 
             Map<String, Object> body = new HashMap<>();
-            body.put("templateSlug", templateSlug);
-            body.put("metadata", metadata);
+            body.put("template_slug", templateSlug);
+            body.put("meta", meta);
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
@@ -277,13 +277,13 @@ This is the recommended approach for production environments, as it securely han
 
     Route::post('/api/getSessionToken', function (Request $request) {
         $templateSlug = $request->input('templateSlug');
-        $metadata = [ 'user_id' => 123 ];
+        $meta = [ 'user_id' => 123 ];
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer YOUR_API_TOKEN',
         ])->post('https://fuse.flatirons.com/api/v1/importer/sessions', [
-            'templateSlug' => $templateSlug,
-            'metadata' => $metadata,
+            'template_slug' => $templateSlug,
+            'meta' => $meta,
         ]);
 
         if ($response->successful()) {
