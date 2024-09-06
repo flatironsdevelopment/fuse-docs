@@ -43,7 +43,8 @@
         "getting-started/adding-columns",
         "getting-started/adding-data-validations",
         "getting-started/adding-data-transformations",
-        "getting-started/embedding"
+        "getting-started/embedding",
+        "getting-started/sessions"
       ]
     },
     {
@@ -104,11 +105,21 @@
       "pages": ["apis/authentication", "apis/pagination"]
     },
     {
-      "group": "Resources",
+      "group": "Imports",
       "pages": [
-        "apis/resources/import-session",
-        "apis/resources/imports/list-imports",
+        "apis/resources/imports/list-imports"
+      ]
+    },
+    {
+      "group": "Import Records",
+      "pages": [
         "apis/resources/records/import-records"
+      ]
+    },
+    {
+      "group": "Sessions",
+      "pages": [
+        "apis/resources/import-session"
       ]
     }
   ],

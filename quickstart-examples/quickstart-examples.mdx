@@ -23,11 +23,7 @@ This provides a quick example of a path for the importer where all records are v
     <script type="text/javascript">
       const importer = new FuseImporter();
 
-      // This method should call your backend to get a importer session token
-      // For more details, refer to the documentation: https://fuse-docs.flatirons.com/getting-started/embedding#launching-an-importer
-      importer.getSessionToken = async () => {
-        // return a session token
-      };
+      importer.getSessionToken = ... // see https://fuse-docs.flatirons.com/getting-started/sessions
 
       importer.onValidateRecord = async (record) => {
         // return no frontend validation errors or warnings
@@ -69,11 +65,7 @@ The example below illustrates both frontend and backend validations.
     <script type="text/javascript">
       const importer = new FuseImporter();
 
-      // This method should call your backend to get a importer session token
-      // For more details, refer to the documentation: https://fuse-docs.flatirons.com/getting-started/embedding#launching-an-importer
-      importer.getSessionToken = async () => {
-        // return a session token
-      };
+      importer.getSessionToken = ... // see https://fuse-docs.flatirons.com/getting-started/sessions
 
       // frontend validations
       importer.onValidateRecord = async (record) => {
