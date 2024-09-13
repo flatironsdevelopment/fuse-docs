@@ -7,7 +7,7 @@ paths:
   "/api/v1/importer/sessions":
     post:
       summary: Create Session
-      description: Use this endpoint to generate an importer session token based on a template slug. The session token should be used as part of creating a fuse importer instance.
+      description: Use this endpoint to generate an importer session token based on an importer slug. The session token should be used as part of creating a fuse importer instance.
       tags:
       - Create Session
       security:
@@ -28,21 +28,22 @@ paths:
         '422':
           description: unprocessable entity
         '404':
-          description: template not found
+          description: importer not found
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                template_slug:
+                importer_slug:
                   type: string
-                  description: Template Slug
+                  description: Importer Slug
                 meta:
                   type: object
                   description: Contains meta information about the importer session which can contain user related information
               required:
-              - template_slug
+              - importer_slug
+
   "/api/v1/imports/{import_slug}/records":
     get:
       summary: Import Records
@@ -69,7 +70,7 @@ paths:
           type: integer
       responses:
         '200':
-          description: records found
+          description: A paginated list of records for a particular import
           content:
             application/json:
               schema:
@@ -95,7 +96,7 @@ paths:
                         updated_at:
                           type: string
                           format: date-time
-                          description: The timestamp of creation for the record
+                          description: The timestamp of last update for the record
                         sort:
                           type: integer
                           description: The sort order
@@ -105,13 +106,17 @@ paths:
                       - created_at
                       - updated_at
                       - sort
-                description: A paginated list of records for a particular import
+                  metadata:
+                    type: object
+                    description: Metadata associated with the import session
                 required:
                 - data
+                - metadata
         '404':
           description: import not found
         '401':
           description: unauthorized
+
   "/api/v1/imports":
     get:
       summary: List Imports
@@ -162,14 +167,14 @@ paths:
                         updated_at:
                           type: string
                           format: date-time
-                          description: The timestamp of creation for the import
+                          description: The timestamp of last update for the import
                         status:
                           type: string
                           enum:
                           - created
-                          - records_submitting
-                          - records_submitted
-                          - records_processed
+                          - submitting
+                          - submitted
+                          - completed
                           description: The status of the import
                         template:
                           type: object
@@ -182,15 +187,80 @@ paths:
                           required:
                           - name
                           - slug
+                        metadata:
+                          type: object
+                          description: Additional metadata for the import
                       required:
                       - slug
                       - row_count
-                      - template
                       - created_at
                       - updated_at
                       - status
+                required:
+                - data
         '401':
           description: unauthorized
+
+  "/api/v1/imports/{id}":
+    get:
+      summary: Retrieves a specific import
+      tags:
+        - imports
+      description: Get details of a specific import by ID.
+      security:
+        - bearer: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Import details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  slug:
+                    type: string
+                  row_count:
+                    type: integer
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                  status:
+                    type: string
+                    enum:
+                      - created
+                      - submitting
+                      - submitted
+                      - completed
+                  template:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      slug:
+                        type: string
+                  metadata:
+                    type: object
+                    nullable: true
+                required:
+                  - slug
+                  - row_count
+                  - created_at
+                  - updated_at
+                  - status
+        '404':
+          description: Import not found
+        '401':
+          description: unauthorized
+
 servers:
 - url: https://fuse.flatirons.com
   variables:

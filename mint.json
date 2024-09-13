@@ -107,7 +107,8 @@
     {
       "group": "Imports",
       "pages": [
-        "apis/resources/imports/list-imports"
+        "apis/resources/imports/list-imports",
+        "apis/resources/imports/get-import"
       ]
     },
     {

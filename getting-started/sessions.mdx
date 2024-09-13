@@ -141,12 +141,12 @@ This is the recommended approach for production environments, as it securely han
     app.use(express.json());
 
     app.post('/api/getSessionToken', async (req, res) => {
-      const { templateSlug } = req.body;
+      const { importerSlug } = req.body;
       const meta = { user_id: 123 };
 
       try {
         const response = await axios.post('https://fuse.flatirons.com/api/v1/importer/sessions', {
-          template_slug: templateSlug,
+          importer_slug: importerSlug,
           meta
         }, {
           headers: { 'Authorization': `Bearer YOUR_API_TOKEN` }
@@ -170,7 +170,7 @@ This is the recommended approach for production environments, as it securely han
     post '/api/getSessionToken' do
       content_type :json
       request_body = JSON.parse(request.body.read)
-      template_slug = request_body['templateSlug']
+      importer_slug = request_body['importerSlug']
       meta = { user_id: 123 }
 
       uri = URI('https://fuse.flatirons.com/api/v1/importer/sessions')
@@ -178,7 +178,7 @@ This is the recommended approach for production environments, as it securely han
       http.use_ssl = true
 
       request = Net::HTTP::Post.new(uri.path, { 'Authorization' => 'Bearer YOUR_API_TOKEN', 'Content-Type' => 'application/json' })
-      request.body = { template_slug: templateSlug, meta: meta }.to_json
+      request.body = { importer_slug: importerSlug, meta: meta }.to_json
 
       response = http.request(request)
       if response.code == '200'
@@ -201,14 +201,14 @@ This is the recommended approach for production environments, as it securely han
     @app.route('/api/getSessionToken', methods=['POST'])
     def get_session_token():
         data = request.json
-        template_slug = data.get('templateSlug')
+        importer_slug = data.get('importerSlug')
         meta = { 'user_id': 123 }
 
         headers = {
             'Authorization': 'Bearer YOUR_API_TOKEN'
         }
         payload = {
-            'template_slug': template_slug,
+            'importer_slug': importer_slug,
             'meta': meta
         }
         try:
@@ -241,7 +241,7 @@ This is the recommended approach for production environments, as it securely han
 
         @PostMapping("/api/getSessionToken")
         public Map<String, String> getSessionToken(@RequestBody Map<String, Object> requestBody) {
-            String templateSlug = (String) requestBody.get("templateSlug");
+            String importerSlug = (String) requestBody.get("importerSlug");
             Map<String, Object> meta = new HashMap<>();
             meta.put("user_id", 123);
 
@@ -252,7 +252,7 @@ This is the recommended approach for production environments, as it securely han
             headers.set("Authorization", "Bearer YOUR_API_TOKEN");
 
             Map<String, Object> body = new HashMap<>();
-            body.put("template_slug", templateSlug);
+            body.put("importer_slug", importerSlug);
             body.put("meta", meta);
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
@@ -276,13 +276,13 @@ This is the recommended approach for production environments, as it securely han
     use Illuminate\Support\Facades\Http;
 
     Route::post('/api/getSessionToken', function (Request $request) {
-        $templateSlug = $request->input('templateSlug');
+        $importerSlug = $request->input('importerSlug');
         $meta = [ 'user_id' => 123 ];
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer YOUR_API_TOKEN',
         ])->post('https://fuse.flatirons.com/api/v1/importer/sessions', [
-            'template_slug' => $templateSlug,
+            'importer_slug' => $importerSlug,
             'meta' => $meta,
         ]);
 
@@ -392,7 +392,7 @@ This is the recommended approach for production environments, as it securely han
 
       getSessionToken() {
         return this.http.post('/api/getSessionToken', {
-          templateSlug: 'YOUR_TEMPLATE_SLUG',
+          importerSlug: 'YOUR_IMPORTER_SLUG',
           metadata: {}
         }).toPromise().then((res: any) => res.token);
       }
