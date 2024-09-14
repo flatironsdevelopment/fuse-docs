@@ -22,7 +22,10 @@ Fuse will send records to your webhook in **batches** of 1,000. The payload look
   import_slug: '960e938b-b3ac-4948-8713-ea84fdc72121',
   batches_count: 10,
   records: [],
-  complete: false
+  complete: false,
+  metadata: {
+    // Object containing metadata related to the import session
+  }
 }
 ```
 
