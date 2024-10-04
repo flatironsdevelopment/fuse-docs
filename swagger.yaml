@@ -38,7 +38,7 @@ paths:
                 importer_slug:
                   type: string
                   description: Importer Slug
-                meta:
+                metadata:
                   type: object
                   description: Contains meta information about the importer session which can contain user related information
               required:

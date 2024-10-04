@@ -33,7 +33,7 @@ This option is simpler but less secure, as it involves exposing your API key in 
     const importer = new FuseImporter();
 
     importer.getSessionToken = getFuseClientSideToken({
-      importer_id: 'YOUR_IMPORTER_ID',
+      importer_slug: 'YOUR_IMPORTER_SLUG',
       api_key: 'YOUR_API_KEY'
     });
 
@@ -50,7 +50,7 @@ This option is simpler but less secure, as it involves exposing your API key in 
       const importer = new FuseImporter();
 
       importer.getSessionToken = getFuseClientSideToken({
-        importer_id: 'YOUR_IMPORTER_ID',
+        importer_slug: 'YOUR_IMPORTER_SLUG',
         api_key: 'YOUR_API_KEY'
       });
 
@@ -82,7 +82,7 @@ This option is simpler but less secure, as it involves exposing your API key in 
           const importer = new FuseImporter();
 
           importer.getSessionToken = getFuseClientSideToken({
-            importer_id: 'YOUR_IMPORTER_ID',
+            importer_slug: 'YOUR_IMPORTER_SLUG',
             api_key: 'YOUR_API_KEY'
           });
 
@@ -108,7 +108,7 @@ This option is simpler but less secure, as it involves exposing your API key in 
         const importer = new FuseImporter();
 
         importer.getSessionToken = getFuseClientSideToken({
-          importer_id: 'YOUR_IMPORTER_ID',
+          importer_slug: 'YOUR_IMPORTER_SLUG',
           api_key: 'YOUR_API_KEY'
         });
 
@@ -142,12 +142,12 @@ This is the recommended approach for production environments, as it securely han
 
     app.post('/api/getSessionToken', async (req, res) => {
       const { importerSlug } = req.body;
-      const meta = { user_id: 123 };
+      const metadata = { user_id: 123 };
 
       try {
         const response = await axios.post('https://fuse.flatirons.com/api/v1/importer/sessions', {
           importer_slug: importerSlug,
-          meta
+          metadata: metadata
         }, {
           headers: { 'Authorization': `Bearer YOUR_API_TOKEN` }
         });
@@ -171,14 +171,14 @@ This is the recommended approach for production environments, as it securely han
       content_type :json
       request_body = JSON.parse(request.body.read)
       importer_slug = request_body['importerSlug']
-      meta = { user_id: 123 }
+      metadata = { user_id: 123 }
 
       uri = URI('https://fuse.flatirons.com/api/v1/importer/sessions')
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
 
       request = Net::HTTP::Post.new(uri.path, { 'Authorization' => 'Bearer YOUR_API_TOKEN', 'Content-Type' => 'application/json' })
-      request.body = { importer_slug: importerSlug, meta: meta }.to_json
+      request.body = { importer_slug: importerSlug, metadata: metadata }.to_json
 
       response = http.request(request)
       if response.code == '200'
@@ -202,14 +202,14 @@ This is the recommended approach for production environments, as it securely han
     def get_session_token():
         data = request.json
         importer_slug = data.get('importerSlug')
-        meta = { 'user_id': 123 }
+        metadata = { 'user_id': 123 }
 
         headers = {
             'Authorization': 'Bearer YOUR_API_TOKEN'
         }
         payload = {
             'importer_slug': importer_slug,
-            'meta': meta
+            'metadata': metadata
         }
         try:
             response = requests.post('https://fuse.flatirons.com/api/v1/importer/sessions', json=payload, headers=headers)
@@ -242,8 +242,8 @@ This is the recommended approach for production environments, as it securely han
         @PostMapping("/api/getSessionToken")
         public Map<String, String> getSessionToken(@RequestBody Map<String, Object> requestBody) {
             String importerSlug = (String) requestBody.get("importerSlug");
-            Map<String, Object> meta = new HashMap<>();
-            meta.put("user_id", 123);
+            Map<String, Object> metadata = new HashMap<>();
+              metadata.put("user_id", 123);
 
             RestTemplate restTemplate = new RestTemplate();
             String url = "https://fuse.flatirons.com/api/v1/importer/sessions";
@@ -253,7 +253,7 @@ This is the recommended approach for production environments, as it securely han
 
             Map<String, Object> body = new HashMap<>();
             body.put("importer_slug", importerSlug);
-            body.put("meta", meta);
+            body.put("metadata", metadata);
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
@@ -277,13 +277,13 @@ This is the recommended approach for production environments, as it securely han
 
     Route::post('/api/getSessionToken', function (Request $request) {
         $importerSlug = $request->input('importerSlug');
-        $meta = [ 'user_id' => 123 ];
+        $metadata = [ 'user_id' => 123 ];
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer YOUR_API_TOKEN',
         ])->post('https://fuse.flatirons.com/api/v1/importer/sessions', [
             'importer_slug' => $importerSlug,
-            'meta' => $meta,
+            'metadata' => $metadata,
         ]);
 
         if ($response->successful()) {

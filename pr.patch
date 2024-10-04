@@ -1,0 +1,482 @@
+From 7ddbb5c6307d6b6e6de8468b027e06c2e5120b25 Mon Sep 17 00:00:00 2001
+From: Camilo Barraza <camilo.barraza@tomtom.com>
+Date: Mon, 23 Sep 2024 23:40:29 +0200
+Subject: [PATCH] test commit
+
+---
+ ui/fuse-importer/src/index.tsx                |  7 +++
+ ui/fuse-importer/src/types.ts                 | 30 ++++++---
+ .../src/Importer/common/theme.ts              | 32 ----------
+ .../src/Importer/common/theme/index.ts        | 20 ++++++
+ .../theme/mapCustomStylesToThemeOverrides.ts  | 63 +++++++++++++++++++
+ .../Importer/common/theme/themeVariants.ts    | 29 +++++++++
+ .../contexts/ImporterContextProvider.tsx      | 35 ++++++++++-
+ ui/fuse-shared-ui/src/Importer/index.tsx      |  4 ++
+ .../src/WebappIframeInterface.tsx             |  1 +
+ .../common/LocalFuseImporter.tsx              |  7 +++
+ .../TemplateRoutes/common/utils.tsx           | 20 ++++++
+ 11 files changed, 206 insertions(+), 42 deletions(-)
+ delete mode 100644 ui/fuse-shared-ui/src/Importer/common/theme.ts
+ create mode 100644 ui/fuse-shared-ui/src/Importer/common/theme/index.ts
+ create mode 100644 ui/fuse-shared-ui/src/Importer/common/theme/mapCustomStylesToThemeOverrides.ts
+ create mode 100644 ui/fuse-shared-ui/src/Importer/common/theme/themeVariants.ts
+
+diff --git a/ui/fuse-importer/src/index.tsx b/ui/fuse-importer/src/index.tsx
+index 46ed2f22..5611e284 100644
+--- a/ui/fuse-importer/src/index.tsx
++++ b/ui/fuse-importer/src/index.tsx
+@@ -2,6 +2,7 @@ import {
+   ColumnRequiredProps,
+   CustomAction,
+   CustomActionTypes,
++  CustomStyles,
+   FieldTypesAsUnion,
+   FormatRecord,
+   GetSessionToken,
+@@ -34,6 +35,7 @@ class FuseImporter {
+   templateSlug: string;
+   options: ImporterOptions;
+   records: Record[];
++  customStyles?: CustomStyles;
+ 
+   public constructor(
+     apiToken: string,
+@@ -192,6 +194,7 @@ class FuseImporter {
+                   name: ca.name,
+                   actionType: ca.actionType,
+                 })),
++                customStyles: this.customStyles,
+               },
+             },
+             "*"
+@@ -234,6 +237,10 @@ class FuseImporter {
+     if (!Array.isArray(actions)) actions = [actions];
+     this.customActions.push(...actions);
+   }
++
++  public setCustomStyles(customStyles: CustomStyles) {
++    this.customStyles = customStyles;
++  }
+ }
+ 
+ export * from "./types";
+diff --git a/ui/fuse-importer/src/types.ts b/ui/fuse-importer/src/types.ts
+index 08589e6c..f5514bd5 100644
+--- a/ui/fuse-importer/src/types.ts
++++ b/ui/fuse-importer/src/types.ts
+@@ -1,13 +1,29 @@
+ const EnvironmentTypes = ["local", "production", "staging"] as const;
+ 
+ export type ImporterStylePreferences = {
+-  id: number;
+-  background: string;
+-  highlight1: string;
+-  highlight2: string;
+-  primary_color: string;
+-  secondary_color: string;
+-  logo_url: string;
++  id?: number;
++  background?: string;
++  highlight1?: string;
++  highlight2?: string;
++  primary_color?: string;
++  secondary_color?: string;
++  logo_url?: string;
++};
++
++export type CustomStyles = {
++  colors?: {
++    primaryColor?: string;
++    secondaryColor?: string;
++    borderColor?: string;
++    contentColor?: string;
++    backgroundColor?: string;
++  };
++  logoURL?: string;
++  // TODO: remove text{} before merging
++  text?: {
++    h2?: string;
++    bodyFontSize?: string;
++  };
+ };
+ 
+ export type EnvironmentType = typeof EnvironmentTypes[number];
+diff --git a/ui/fuse-shared-ui/src/Importer/common/theme.ts b/ui/fuse-shared-ui/src/Importer/common/theme.ts
+deleted file mode 100644
+index dffe25b0..00000000
+--- a/ui/fuse-shared-ui/src/Importer/common/theme.ts
++++ /dev/null
+@@ -1,32 +0,0 @@
+-import Color from "color";
+-
+-import { theme } from "../../styled/theme";
+-import { ImporterStylePreferences } from "fuse-importer";
+-
+-export type Theme = typeof theme;
+-
+-const getCustomTheme = (importerStylePreferences: ImporterStylePreferences) => {
+-  const {
+-    primary_color,
+-    secondary_color,
+-    highlight1,
+-    highlight2,
+-    background,
+-  } = importerStylePreferences;
+-  const customTheme: Theme = {
+-    ...theme,
+-    colors: {
+-      ...theme.colors,
+-      pink500: Color(primary_color).hex(),
+-      pink700: Color(primary_color).darken(0.2).hex(),
+-      black: Color(secondary_color).hex(),
+-      blue500: Color(secondary_color).hex(),
+-      blue100: Color(highlight2).hex(),
+-      backgroundPrimary: Color(background).hex(),
+-    },
+-  };
+-
+-  return { theme: customTheme, logoURL: importerStylePreferences.logo_url };
+-};
+-
+-export { theme, getCustomTheme };
+diff --git a/ui/fuse-shared-ui/src/Importer/common/theme/index.ts b/ui/fuse-shared-ui/src/Importer/common/theme/index.ts
+new file mode 100644
+index 00000000..b80b8ca0
+--- /dev/null
++++ b/ui/fuse-shared-ui/src/Importer/common/theme/index.ts
+@@ -0,0 +1,20 @@
++import _ from "lodash";
++import { Theme, theme } from "../../../styled/theme";
++import { mapCustomStylesToThemeOverrides } from "./mapCustomStylesToThemeOverrides";
++import { themeVariants } from "./themeVariants";
++import { CustomStyles } from "fuse-importer";
++
++const getCustomTheme = ({
++  customStyles,
++  selectedTheme = "Default",
++}: {
++  customStyles: CustomStyles;
++  selectedTheme?: keyof typeof themeVariants;
++}): Theme => {
++  const baseTheme = themeVariants[selectedTheme];
++  const themeOverrides = mapCustomStylesToThemeOverrides(customStyles);
++  const customTheme: Theme = _.merge({}, baseTheme, themeOverrides);
++  return customTheme;
++};
++
++export { getCustomTheme, theme };
+diff --git a/ui/fuse-shared-ui/src/Importer/common/theme/mapCustomStylesToThemeOverrides.ts b/ui/fuse-shared-ui/src/Importer/common/theme/mapCustomStylesToThemeOverrides.ts
+new file mode 100644
+index 00000000..5fb63a16
+--- /dev/null
++++ b/ui/fuse-shared-ui/src/Importer/common/theme/mapCustomStylesToThemeOverrides.ts
+@@ -0,0 +1,63 @@
++import { CustomStyles } from "fuse-importer";
++import { css, Theme } from "../../../styled";
++import { baseTheme } from "./themeVariants";
++import Color from "color";
++
++type RecursivePartial<T> = {
++  [P in keyof T]?: T[P] extends object ? RecursivePartial<T[P]> : T[P];
++};
++
++type ThemeOverrides = RecursivePartial<Theme>;
++
++export const mapCustomStylesToThemeOverrides = (
++  customStyles: CustomStyles
++): ThemeOverrides => {
++  const themeOverrides: ThemeOverrides = {
++    colors: {},
++    css: {},
++  };
++  const { colors, text } = customStyles;
++
++  // Color styles
++  if (colors?.backgroundColor) {
++    themeOverrides.colors.backgroundPrimary = Color(
++      colors.backgroundColor
++    ).hex();
++  }
++
++  if (colors?.borderColor) {
++    themeOverrides.colors.blue100 = Color(colors.borderColor).hex();
++  }
++
++  if (colors?.primaryColor) {
++    themeOverrides.colors.pink500 = Color(colors.primaryColor).hex();
++    themeOverrides.colors.pink700 = Color(colors.primaryColor)
++      .darken(0.2)
++      .hex();
++  }
++
++  if (colors?.secondaryColor) {
++    themeOverrides.colors.black = Color(colors.secondaryColor).hex();
++    themeOverrides.colors.blue500 = Color(colors.secondaryColor).hex();
++  }
++
++  if (colors?.contentColor) {
++    themeOverrides.colors.blue100 = Color(colors.contentColor).hex();
++  }
++
++  // Text styles
++  if (text?.h2) {
++    themeOverrides.css.h2 = css`
++      ${baseTheme.css?.h2 || ""} ${text.h2}
++    `;
++  }
++
++  if (text?.bodyFontSize) {
++    themeOverrides.css.body1 = css`
++      ${baseTheme.css?.body1} 
++      font-size: ${text.bodyFontSize};
++    `;
++  }
++
++  return themeOverrides;
++};
+diff --git a/ui/fuse-shared-ui/src/Importer/common/theme/themeVariants.ts b/ui/fuse-shared-ui/src/Importer/common/theme/themeVariants.ts
+new file mode 100644
+index 00000000..24fb205e
+--- /dev/null
++++ b/ui/fuse-shared-ui/src/Importer/common/theme/themeVariants.ts
+@@ -0,0 +1,29 @@
++import { css } from "styled-components";
++import { Theme, theme } from "../../../styled/theme";
++
++export const baseTheme = theme;
++
++const modernLightTheme: Theme = {
++  ...baseTheme,
++  colors: {
++    ...baseTheme.colors,
++    pink500: "#E91E63",
++    pink700: "#C2185B",
++    black: "#212121",
++    blue500: "#2196F3",
++    blue100: "#BBDEFB",
++    backgroundPrimary: "#EDF2FA",
++  },
++  css: {
++    ...baseTheme.css,
++    h2: css`
++      ${baseTheme.css.h2}
++      color: #373A41;
++    `,
++  },
++};
++
++export const themeVariants = {
++  Default: baseTheme,
++  "Modern Light": modernLightTheme,
++};
+diff --git a/ui/fuse-shared-ui/src/Importer/contexts/ImporterContextProvider.tsx b/ui/fuse-shared-ui/src/Importer/contexts/ImporterContextProvider.tsx
+index f624b9c7..91d3e017 100644
+--- a/ui/fuse-shared-ui/src/Importer/contexts/ImporterContextProvider.tsx
++++ b/ui/fuse-shared-ui/src/Importer/contexts/ImporterContextProvider.tsx
+@@ -11,9 +11,11 @@ import React, {
+ } from "react";
+ import {
+   CustomAction,
++  CustomStyles,
+   FieldTypes,
+   FormatRecord,
+   ImporterOptions,
++  ImporterStylePreferences,
+   Integration,
+   OnSubmit,
+   OnValidateRecord,
+@@ -23,9 +25,10 @@ import {
+   TemplateInfo,
+ } from "fuse-importer";
+ import { FuseApi } from "../common/FuseApi";
+-import { Theme, getCustomTheme, theme } from "../common/theme";
++import { getCustomTheme, theme } from "../common/theme";
+ import { getColumnType, verifyDuplicateValue } from "../common/utils";
+ import { baseWsUrls } from "../common";
++import { Theme } from "../../styled";
+ 
+ export type HeaderMatchings = {
+   // maps to uploadedData header
+@@ -67,7 +70,7 @@ export type State = {
+   previewFirstTime: boolean;
+   fuseApi: FuseApi;
+   importerOptions: ImporterOptions;
+-  theme: any;
++  theme: Theme;
+   logoURL: string;
+   integrations: Integration[];
+   onSubmit: OnSubmit;
+@@ -119,6 +122,7 @@ export type Props = {
+   onValidateRecord?: OnValidateRecord;
+   dynamicColumns: TemplateHeader[] | null;
+   customActions: CustomAction[];
++  customStyles?: CustomStyles;
+ };
+ 
+ type HeaderMappings = {
+@@ -127,6 +131,21 @@ type HeaderMappings = {
+ 
+ const ImporterContext = createContext<State>({} as State);
+ 
++const buildCustomStylesFromImporterStylePreferences = (
++  importer_style_preferences: ImporterStylePreferences
++): CustomStyles => {
++  return {
++    colors: {
++      backgroundColor: importer_style_preferences.background,
++      borderColor: importer_style_preferences.highlight1,
++      contentColor: importer_style_preferences.highlight2,
++      primaryColor: importer_style_preferences.primary_color,
++      secondaryColor: importer_style_preferences.secondary_color,
++    },
++    logoURL: importer_style_preferences.logo_url,
++  };
++};
++
+ export const ImporterContextProvider = ({
+   templateSlug,
+   initialRecords,
+@@ -140,6 +159,7 @@ export const ImporterContextProvider = ({
+   onValidateRecord,
+   dynamicColumns,
+   customActions,
++  customStyles,
+ }: Props) => {
+   const [currentStepIndex, setCurrentStepIndex] = useState(
+     initialRecords ? 2 : 0
+@@ -421,7 +441,16 @@ export const ImporterContextProvider = ({
+         setPreviewFirstTime(preview_first_time);
+         setIsUsingPersistence(persistence);
+         if (organization.plan && organization.plan.allow_style_customization) {
+-          setStyle(getCustomTheme(importer_style_preferences));
++          let _customStyles = customStyles;
++          if (!customStyles) {
++            _customStyles = buildCustomStylesFromImporterStylePreferences(
++              importer_style_preferences
++            );
++          }
++          setStyle({
++            theme: getCustomTheme({ customStyles: _customStyles }),
++            logoURL: _customStyles.logoURL,
++          });
+         }
+       } catch (error) {
+         const errorMsg =
+diff --git a/ui/fuse-shared-ui/src/Importer/index.tsx b/ui/fuse-shared-ui/src/Importer/index.tsx
+index 9ae82a35..010637cd 100644
+--- a/ui/fuse-shared-ui/src/Importer/index.tsx
++++ b/ui/fuse-shared-ui/src/Importer/index.tsx
+@@ -1,5 +1,6 @@
+ import {
+   CustomAction,
++  CustomStyles,
+   FormatRecord,
+   ImporterOptions,
+   OnSubmit,
+@@ -32,6 +33,7 @@ export type ImporterProps = {
+   dynamicColumns: TemplateHeader[];
+   customActions: CustomAction[];
+   onSubmit?: OnSubmit;
++  customStyles?: CustomStyles;
+   onClose: () => void;
+ };
+ 
+@@ -45,6 +47,7 @@ const Importer = ({
+   dynamicColumns,
+   customActions,
+   onSubmit,
++  customStyles,
+   onClose,
+ }: ImporterProps) => {
+   const [fuseApi, setFuseApi] = useState<FuseApi | null>(null);
+@@ -93,6 +96,7 @@ const Importer = ({
+       onSubmit={onSubmit}
+       dynamicColumns={dynamicColumns}
+       customActions={customActions}
++      customStyles={customStyles}
+     >
+       <ImporterWithContext />
+     </ImporterContextProvider>
+diff --git a/ui/fuse-shared-ui/src/WebappIframeInterface.tsx b/ui/fuse-shared-ui/src/WebappIframeInterface.tsx
+index 4ef18ff2..76699e6a 100644
+--- a/ui/fuse-shared-ui/src/WebappIframeInterface.tsx
++++ b/ui/fuse-shared-ui/src/WebappIframeInterface.tsx
+@@ -134,6 +134,7 @@ export const WebappIframeInterface = () => {
+         return response;
+       },
+     })),
++    customStyles: importerConfig?.customStyles,
+     onSubmit: importerConfig?.hasOnSubmit && createIframeHandler("onSubmit"),
+     formatRecord:
+       importerConfig?.hasFormatRecord && createIframeHandler("formatRecord"),
+diff --git a/ui/webapp/src/components/Routes/AccountRoutes/TemplateRoutes/common/LocalFuseImporter.tsx b/ui/webapp/src/components/Routes/AccountRoutes/TemplateRoutes/common/LocalFuseImporter.tsx
+index 7440cbea..6e2c19fd 100644
+--- a/ui/webapp/src/components/Routes/AccountRoutes/TemplateRoutes/common/LocalFuseImporter.tsx
++++ b/ui/webapp/src/components/Routes/AccountRoutes/TemplateRoutes/common/LocalFuseImporter.tsx
+@@ -9,6 +9,7 @@ import {
+   OnSubmit,
+   OnValidateRecord,
+   Record,
++  CustomStyles,
+   TemplateHeader,
+   fuseImporterId,
+ } from "fuse-importer";
+@@ -29,6 +30,7 @@ class LocalFuseImporter {
+   templateSlug: string;
+   options: ImporterOptions;
+   records: Record[];
++  customStyles?: CustomStyles;
+   sessionToken: string;
+ 
+   public constructor({
+@@ -126,11 +128,16 @@ class LocalFuseImporter {
+     return div;
+   }
+ 
++  public setCustomStyles(styles: CustomStyles) {
++    this.customStyles = styles;
++  }
++
+   private createImporterComponent() {
+     return (
+       <Importer
+         sessionToken={this.sessionToken}
+         templateSlug={this.templateSlug}
++        customStyles={this.customStyles}
+         options={this.options}
+         formatRecord={this.formatRecord}
+         onValidateRecord={this.onValidateRecord}
+diff --git a/ui/webapp/src/components/Routes/AccountRoutes/TemplateRoutes/common/utils.tsx b/ui/webapp/src/components/Routes/AccountRoutes/TemplateRoutes/common/utils.tsx
+index 596d6b1a..875997f3 100644
+--- a/ui/webapp/src/components/Routes/AccountRoutes/TemplateRoutes/common/utils.tsx
++++ b/ui/webapp/src/components/Routes/AccountRoutes/TemplateRoutes/common/utils.tsx
+@@ -34,6 +34,26 @@ export const launchImporter = ({
+     const warnings: ValidationErrors = {};
+     return { errors: errors, warnings: warnings };
+   };
++
++  // TODO: Remove before merging
++  importer.setCustomStyles({
++    colors: {
++      backgroundColor: "#F5F5F5",
++      borderColor: "#3F51B5",
++      contentColor: "#f7e4eb",
++      primaryColor: "#3F51B5",
++      secondaryColor: "#FF4081",
++    },
++    text: {
++      h2: `
++        color: #3F51B5;
++        font-size: 28px;
++        font-weight: 600;
++      `,
++      bodyFontSize: "16px",
++    },
++  });
++
+   importer.onValidateRecord = onValidateRecord;
+   importer.onClose = onCloseCallback;
+   importer.getSessionToken = async () => {
+-- 
+2.39.3 (Apple Git-146)
+

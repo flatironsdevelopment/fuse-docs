@@ -1,0 +1,58 @@
+---
+title: 'Customizing Styles'
+description: 'Learn how to customize the appearance of the Fuse Importer'
+---
+
+# Customizing Fuse Importer Styles
+
+The Fuse Importer allows you to customize its appearance to match your application's design. This guide explains how to use the `setCustomStyles` method to modify colors, fonts, and other visual aspects of the importer.
+
+## Using setCustomStyles
+
+To customize the Fuse Importer's styles, use the `setCustomStyles` method on your importer instance:
+
+```typescript
+importer.setCustomStyles({
+  colors: {
+    backgroundColor: "#F5F5F5",
+    borderColor: "#3F51B5",
+    contentColor: "#f7e4eb",
+    primaryColor: "#3F51B5",
+    secondaryColor: "#FF4081",
+  },
+  text: {
+    h2: `
+      color: #3F51B5;
+      font-size: 28px;
+      font-weight: 600;
+    `,
+    bodyFontSize: "16px",
+  },
+  logoURL: "https://example.com/logo.png"
+});
+```
+
+## Customizable Properties
+
+The `setCustomStyles` method accepts an object with the following properties:
+
+### Colors
+
+The `colors` object allows you to define various color aspects of the importer:
+
+- `backgroundColor`: The background color of the importer
+- `borderColor`: The color used for borders
+- `contentColor`: The color used for content areas
+- `primaryColor`: The primary color used throughout the importer
+- `secondaryColor`: The secondary color used for accents
+
+### Text Styles
+
+The `text` object lets you customize text appearances:
+
+- `h2`: CSS styles for h2 elements
+- `bodyFontSize`: The font size for body text
+
+### Logo
+
+- `logoURL`: A string URL for a custom logo
