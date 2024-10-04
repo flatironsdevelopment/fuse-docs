@@ -21,38 +21,6 @@ and
 mintlify dev
 ```
 
-### Customizing Importer Styles
-
-You can customize the appearance of the Fuse Importer using the `setCustomStyles` method. This allows you to modify colors, fonts, and other visual aspects of the importer. Here's an example of how to use it:
-
-```typescript
-importer.setCustomStyles({
-  colors: {
-    backgroundColor: "#F5F5F5",
-    borderColor: "#3F51B5",
-    contentColor: "#f7e4eb",
-    primaryColor: "#3F51B5",
-    secondaryColor: "#FF4081",
-  },
-  text: {
-    h2: `
-      color: #3F51B5;
-      font-size: 28px;
-      font-weight: 600;
-    `,
-    bodyFontSize: "16px",
-  },
-});
-```
-
-The `setCustomStyles` method accepts an object with the following properties:
-
-- `colors`: An object containing color definitions for various UI elements.
-- `text`: An object for customizing text styles.
-- `logoURL`: A string URL for a custom logo (not shown in the example above).
-
-Refer to the `CustomStyles` type in the source code for a complete list of customizable properties.
-
 ### 😎 Publishing Changes
 
 Changes will be deployed to production automatically after pushing to the default branch.
