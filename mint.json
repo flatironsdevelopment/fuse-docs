@@ -37,14 +37,6 @@
   ],
   "navigation": [
     {
-      "group": "Getting Started",
-      "pages": ["introduction", "quickstart"]
-    },
-    {
-      "group": "Fuse Importer",
-      "pages": ["fuse-importer", "customizing-styles"]
-    },
-    {
       "group": "Importer Setup",
       "pages": [
         "getting-started/overview",
