@@ -25,7 +25,9 @@ The `addColumn` function accepts an object as an argument.
 <Tabs>
   <Tab title="JavaScript">
     ```javascript
-      const importer = new FuseImporter(organizationApiKey, importerId);
+      const importer = new FuseImporter();
+
+      importer.getSessionToken = ... // see https://fuse-docs.flatirons.com/getting-started/sessions
 
       const validations = [
         {
@@ -60,7 +62,9 @@ The `addColumn` function accepts an object as an argument.
   </Tab>
   <Tab title="TypeScript">
     ```typescript
-      const importer = new FuseImporter(organizationApiKey, importerId);
+      const importer = new FuseImporter();
+
+      importer.getSessionToken = ... // see https://fuse-docs.flatirons.com/getting-started/sessions
 
       // ColumnValidations should be imported from "fuse-importer"
       const validations: ColumnValidations<"string">[] = [

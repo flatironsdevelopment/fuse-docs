@@ -15,20 +15,9 @@ Below is some sample Vue.js code to get you started with our CSV Importer. Be su
     },
     methods: {
       showImporter() {
-        const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
-        const templateId = "YOUR TEMPLATE ID";
+        const importer = new FuseImporter();
 
-        if (
-          organizationApiKey.indexOf("YOUR") !== -1 ||
-          templateId.indexOf("YOUR") !== -1
-        ) {
-          window.confirm(
-            "You need to configure your organization api key and template id."
-          );
-          return;
-        }
-
-        const importer = new FuseImporter(organizationApiKey, templateId);
+        importer.getSessionToken = ... // see https://fuse-docs.flatirons.com/getting-started/sessions
 
         importer.onSubmit = async (records) => {
           return {

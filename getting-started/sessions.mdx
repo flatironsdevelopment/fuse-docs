@@ -1,0 +1,408 @@
+---
+title: "Sessions"
+description: ""
+---
+
+**Sessions**
+------------
+
+### Overview
+
+A **session** in Fuse allows you to launch the importer by generating a session token. You can store metadata such as user IDs inside of a session so that when you retrieve imports from the Fuse API, you know which user in your system to associate them with.
+
+Depending on your needs, you can choose between two options:
+
+1.  **Client-Side Sessions**: A simpler method that generates the session token directly in the frontend, though it exposes your API key and should only be used in trusted or testing environments.
+
+2.  **Server-Side Sessions**: The most secure method, as it prevents exposing sensitive data by handling session token generation on your backend.
+### Client-Side Session
+
+This option is simpler but less secure, as it involves exposing your API key in the frontend. It should only be used in testing environments or trusted internal tools.
+
+**Steps:**
+
+1.  **Implement `getSessionToken`**: Directly generate the session token using the Fuse client-side token function and pass it to the importer.
+
+#### Frontend Code Sample
+
+<Tabs>
+  <Tab title="JavaScript">
+    ```javascript
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
+
+    const importer = new FuseImporter();
+
+    importer.getSessionToken = getFuseClientSideToken({
+      importer_slug: 'YOUR_IMPORTER_SLUG',
+      api_key: 'YOUR_API_KEY'
+    });
+
+    importer.show();
+    ```
+  </Tab>
+
+  <Tab title="React">
+    ```javascript
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
+    import React from 'react';
+
+    const App = () => {
+      const importer = new FuseImporter();
+
+      importer.getSessionToken = getFuseClientSideToken({
+        importer_slug: 'YOUR_IMPORTER_SLUG',
+        api_key: 'YOUR_API_KEY'
+      });
+
+      const showImporter = () => {
+        importer.show();
+      };
+
+      return (
+        <button onClick={showImporter}>Show Importer</button>
+      );
+    };
+
+    export default App;
+    ```
+  </Tab>
+
+  <Tab title="Vue">
+    ```vue
+    <template>
+      <button @click="showImporter">Show Importer</button>
+    </template>
+
+    <script>
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
+
+    export default {
+      methods: {
+        showImporter() {
+          const importer = new FuseImporter();
+
+          importer.getSessionToken = getFuseClientSideToken({
+            importer_slug: 'YOUR_IMPORTER_SLUG',
+            api_key: 'YOUR_API_KEY'
+          });
+
+          importer.show();
+        }
+      }
+    };
+    </script>
+    ```
+  </Tab>
+
+  <Tab title="Angular">
+    ```typescript
+    import { Component } from '@angular/core';
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
+
+    @Component({
+      selector: 'app-importer',
+      template: `<button (click)="showImporter()">Show Importer</button>`
+    })
+    export class ImporterComponent {
+      showImporter() {
+        const importer = new FuseImporter();
+
+        importer.getSessionToken = getFuseClientSideToken({
+          importer_slug: 'YOUR_IMPORTER_SLUG',
+          api_key: 'YOUR_API_KEY'
+        });
+
+        importer.show();
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+
+
+### Server-Side Sessions
+
+This is the recommended approach for production environments, as it securely handles session token generation on your backend, keeping sensitive information safe.
+
+**Steps**
+
+1.  **Add an API Endpoint**: Create an endpoint on your server that calls the [Session API](/apis/resources/import-session) to generate session tokens using an API key [from your account](https://fuse.flatirons.com/account/developers).
+2.  **Implement `getSessionToken`**: In your frontend, implement `getSessionToken` to request the session token from your server's API endpoint and use it to launch the importer.
+
+#### Backend Code Sample
+
+<Tabs>
+  <Tab title="Node">
+    ```javascript
+    const express = require('express');
+    const axios = require('axios');
+    const app = express();
+    app.use(express.json());
+
+    app.post('/api/getSessionToken', async (req, res) => {
+      const { importerSlug } = req.body;
+      const metadata = { user_id: 123 };
+
+      try {
+        const response = await axios.post('https://fuse.flatirons.com/api/v1/importer/sessions', {
+          importer_slug: importerSlug,
+          metadata: metadata
+        }, {
+          headers: { 'Authorization': `Bearer YOUR_API_TOKEN` }
+        });
+        res.json({ token: response.data.token });
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to get session token' });
+      }
+    });
+
+    app.listen(3000, () => console.log('Server running on port 3000'));
+    ```
+  </Tab>
+
+  <Tab title="Ruby">
+    ```ruby
+    require 'sinatra'
+    require 'net/http'
+    require 'json'
+
+    post '/api/getSessionToken' do
+      content_type :json
+      request_body = JSON.parse(request.body.read)
+      importer_slug = request_body['importerSlug']
+      metadata = { user_id: 123 }
+
+      uri = URI('https://fuse.flatirons.com/api/v1/importer/sessions')
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+
+      request = Net::HTTP::Post.new(uri.path, { 'Authorization' => 'Bearer YOUR_API_TOKEN', 'Content-Type' => 'application/json' })
+      request.body = { importer_slug: importerSlug, metadata: metadata }.to_json
+
+      response = http.request(request)
+      if response.code == '200'
+        { token: JSON.parse(response.body)['token'] }.to_json
+      else
+        status 500
+        { error: 'Failed to get session token' }.to_json
+      end
+    end
+    ```
+  </Tab>
+
+  <Tab title="Python">
+    ```python
+    from flask import Flask, request, jsonify
+    import requests
+
+    app = Flask(__name__)
+
+    @app.route('/api/getSessionToken', methods=['POST'])
+    def get_session_token():
+        data = request.json
+        importer_slug = data.get('importerSlug')
+        metadata = { 'user_id': 123 }
+
+        headers = {
+            'Authorization': 'Bearer YOUR_API_TOKEN'
+        }
+        payload = {
+            'importer_slug': importer_slug,
+            'metadata': metadata
+        }
+        try:
+            response = requests.post('https://fuse.flatirons.com/api/v1/importer/sessions', json=payload, headers=headers)
+            return jsonify({'token': response.json().get('token')})
+        except requests.exceptions.RequestException as e:
+            return jsonify({'error': 'Failed to get session token'}), 500
+
+    if __name__ == '__main__':
+        app.run(port=3000)
+    ```
+  </Tab>
+
+  <Tab title="Java">
+    ```java
+    import org.springframework.http.HttpEntity;
+    import org.springframework.http.HttpHeaders;
+    import org.springframework.http.HttpMethod;
+    import org.springframework.http.ResponseEntity;
+    import org.springframework.web.bind.annotation.PostMapping;
+    import org.springframework.web.bind.annotation.RequestBody;
+    import org.springframework.web.bind.annotation.RestController;
+    import org.springframework.web.client.RestTemplate;
+
+    import java.util.HashMap;
+    import java.util.Map;
+
+    @RestController
+    public class SessionController {
+
+        @PostMapping("/api/getSessionToken")
+        public Map<String, String> getSessionToken(@RequestBody Map<String, Object> requestBody) {
+            String importerSlug = (String) requestBody.get("importerSlug");
+            Map<String, Object> metadata = new HashMap<>();
+              metadata.put("user_id", 123);
+
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://fuse.flatirons.com/api/v1/importer/sessions";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer YOUR_API_TOKEN");
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("importer_slug", importerSlug);
+            body.put("metadata", metadata);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                Map<String, String> result = new HashMap<>();
+                result.put("token", (String) response.getBody().get("token"));
+                return result;
+            } else {
+                throw new RuntimeException("Failed to get session token");
+            }
+        }
+    }
+    ```
+  </Tab>
+
+  <Tab title="PHP">
+    ```php
+    use Illuminate\Http\Request;
+    use Illuminate\Support\Facades\Http;
+
+    Route::post('/api/getSessionToken', function (Request $request) {
+        $importerSlug = $request->input('importerSlug');
+        $metadata = [ 'user_id' => 123 ];
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer YOUR_API_TOKEN',
+        ])->post('https://fuse.flatirons.com/api/v1/importer/sessions', [
+            'importer_slug' => $importerSlug,
+            'metadata' => $metadata,
+        ]);
+
+        if ($response->successful()) {
+            return response()->json(['token' => $response['token']]);
+        } else {
+            return response()->json(['error' => 'Failed to get session token'], 500);
+        }
+    });
+    ```
+  </Tab>
+</Tabs>
+
+
+#### Frontend Code Sample
+
+<Tabs>
+  <Tab title="JavaScript">
+    ```javascript
+    const importer = new FuseImporter();
+
+    importer.getSessionToken = async () => {
+      const response = await fetch('/api/getSessionToken', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      return data.token;
+    };
+
+    importer.show();
+    ```
+  </Tab>
+
+  <Tab title="React">
+    ```javascript
+    import FuseImporter from 'fuse-importer';
+    import React from 'react';
+
+    const App = () => {
+      const importer = new FuseImporter();
+
+      importer.getSessionToken = async () => {
+        const response = await fetch('/api/getSessionToken', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const data = await response.json();
+        return data.token;
+      };
+
+      const showImporter = () => {
+        importer.show();
+      };
+
+      return (
+        <button onClick={showImporter}>Show Importer</button>
+      );
+    };
+
+    export default App;
+    ```
+  </Tab>
+
+  <Tab title="Vue">
+    ```vue
+    <template>
+      <button @click="showImporter">Show Importer</button>
+    </template>
+
+    <script>
+    import FuseImporter from 'fuse-importer';
+
+    export default {
+      methods: {
+        async getSessionToken() {
+          const response = await fetch('/api/getSessionToken', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const data = await response.json();
+          return data.token;
+        },
+        showImporter() {
+          const importer = new FuseImporter();
+          importer.getSessionToken = this.getSessionToken;
+          importer.show();
+        }
+      }
+    };
+    </script>
+    ```
+  </Tab>
+
+  <Tab title="Angular">
+    ```typescript
+    import { Component } from '@angular/core';
+    import { HttpClient } from '@angular/common/http';
+    import FuseImporter from 'fuse-importer';
+
+    @Component({
+      selector: 'app-importer',
+      template: `<button (click)="showImporter()">Show Importer</button>`
+    })
+    export class ImporterComponent {
+      constructor(private http: HttpClient) {}
+
+      getSessionToken() {
+        return this.http.post('/api/getSessionToken', {
+          importerSlug: 'YOUR_IMPORTER_SLUG',
+          metadata: {}
+        }).toPromise().then((res: any) => res.token);
+      }
+
+      showImporter() {
+        const importer = new FuseImporter();
+        importer.getSessionToken = this.getSessionToken.bind(this);
+        importer.show();
+      }
+    }
+    ```
+  </Tab>
+</Tabs>

@@ -10,11 +10,9 @@ const importerOptions = {
   modal: true 
 };
 
-const importer = new FuseImporter(
-  organizationApiKey, 
-  importerId, 
-  importerOptions
-);
+const importer = new FuseImporter({ options: importerOptions });
+
+importer.getSessionToken = ... // see https://fuse-docs.flatirons.com/getting-started/sessions
 
 importer.show();
 ```

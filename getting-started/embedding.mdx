@@ -51,79 +51,158 @@ Embedding Fuse in your website is simple. There are two steps:
 
 The `show` function does exactly what it sounds like; it displays the importer. Ensure you have initialized the importer properly beforehand. Use this function like so:
 
-Setup the importer in JavaScript:
-```javascript
-// set these from your Fuse account
-const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
-const importerId = "YOUR IMPORTER ID";
+<Tabs>
+  <Tab title="JavaScript (Simple)">
+    ```javascript
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
 
-const importerOptions = {
-  modal: false // whether or not to show the importer in a modal
-};
+    // Initialize the importer
+    const importer = new FuseImporter();
 
-const importer = new FuseImporter(organizationApiKey, importerId, importerOptions);
+    // See https://fuse-docs.flatirons.com/getting-started/sessions
+    importer.getSessionToken = getFuseClientSideToken({
+      importer_slug: 'YOUR_IMPORTER_SLUG',
+      api_key: 'YOUR_API_KEY'
+    });
 
-window.showFuseImporter = () => {
-  importer.show();
-}
-```
+    importer.show();
+    ```
+  </Tab>
 
-To open the importer:
-```HTML
-<button onclick="javascript:showFuseImporter()">Show Importer</button>
-```
+  <Tab title="HTML + JS (Full)">
+    ```html
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <script
+          type="text/javascript"
+          src="https://unpkg.com/fuse-importer@latest"
+        ></script>
+        <script type="text/javascript">
+          const importer = new FuseImporter();
 
-## Full HTML Example Code
+          // See https://fuse-docs.flatirons.com/getting-started/sessions
+          importer.getSessionToken = getFuseClientSideToken({
+            importer_slug: 'YOUR_IMPORTER_SLUG',
+            api_key: 'YOUR_API_KEY'
+          });
 
-The example below illustrates both frontend and backend validations.
+          // Frontend validations
+          importer.onValidateRecord = async (record) => {
+            const errors = {};
 
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <script
-      type="text/javascript"
-      src="https://unpkg.com/fuse-importer@latest"
-    ></script>
-    <script type="text/javascript">
-      const organizationApiKey = "YOUR ORGANIZATIONS API KEY";
-      const importerId = "YOUR IMPORTER ID";
-      const importer = new FuseImporter(organizationApiKey, importerId);
+            // Validate that the email includes "gmail"
+            if (!record.email?.includes("gmail")) {
+              errors["email"] = "Email must be from Gmail";
+            }
 
-      // frontend validations
-      importer.onValidateRecord = async (record) => {
-        const errors = {};
+            return { errors: errors, warnings: {} };
+          };
 
-        // force emails to include Gmail
-        if (!record.email?.includes("gmail")) {
-          errors["email"] = "Email must from gmail";
-        }
+          // Data transformations
+          importer.formatRecord = (record) => {
+            const newRecord = { ...record };
 
-        return { errors: errors, warnings: {} };
-      };
+            // Capitalize the first letter of the first name
+            if (typeof newRecord.first_name === "string") {
+              newRecord.first_name =
+                newRecord.first_name.charAt(0).toUpperCase() +
+                newRecord.first_name.slice(1);
+            }
 
-      // data transformations
-      importer.formatRecord = (record) => {
-        const newRecord = { ...record };
+            return newRecord;
+          };
 
-        // capitalize the first letter in first_name
-        if (typeof newRecord.first_name === "string") {
-          newRecord.first_name =
-            newRecord.first_name.charAt(0).toUpperCase() +
-            newRecord.first_name.slice(1);
-        }
+          window.showFuseImporter = () => {
+            importer.show();
+          };
+        </script>
+      </head>
 
-        return newRecord;
-      };
+      <body>
+        <button onclick="javascript:showFuseImporter()">Show Importer</button>
+      </body>
+    </html>
+    ```
+  </Tab>
 
-      window.showFuseImporter = () => {
+  <Tab title="React">
+    ```javascript
+    import React from 'react';
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
+
+    const App = () => {
+      const importer = new FuseImporter();
+
+      // See https://fuse-docs.flatirons.com/getting-started/sessions
+      importer.getSessionToken = getFuseClientSideToken({
+        importer_slug: 'YOUR_IMPORTER_SLUG',
+        api_key: 'YOUR_API_KEY'
+      });
+
+      const showImporter = () => {
         importer.show();
       };
-    </script>
-  </head>
 
-  <body>
-    <button onclick="javascript:showFuseImporter()">Show Importer</button>
-  </body>
-</html>
-```
+      return (
+        <button onClick={showImporter}>Show Importer</button>
+      );
+    };
+
+    export default App;
+    ```
+  </Tab>
+
+  <Tab title="Angular">
+    ```typescript
+    import { Component } from '@angular/core';
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
+
+    @Component({
+      selector: 'app-root',
+      template: `<button (click)="showImporter()">Show Importer</button>`,
+    })
+    export class AppComponent {
+      showImporter() {
+        const importer = new FuseImporter();
+
+        // See https://fuse-docs.flatirons.com/getting-started/sessions
+        importer.getSessionToken = getFuseClientSideToken({
+          importer_slug: 'YOUR_IMPORTER_SLUG',
+          api_key: 'YOUR_API_KEY'
+        });
+
+        importer.show();
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="Vue">
+    ```javascript
+    <template>
+      <button @click="showImporter">Show Importer</button>
+    </template>
+
+    <script>
+    import FuseImporter, { getFuseClientSideToken } from 'fuse-importer';
+
+    export default {
+      methods: {
+        showImporter() {
+          const importer = new FuseImporter();
+
+          // See https://fuse-docs.flatirons.com/getting-started/sessions
+          importer.getSessionToken = getFuseClientSideToken({
+            importer_slug: 'YOUR_IMPORTER_SLUG',
+            api_key: 'YOUR_API_KEY'
+          });
+
+          importer.show();
+        }
+      }
+    };
+    </script>
+    ```
+  </Tab>
+</Tabs>

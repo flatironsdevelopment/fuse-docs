@@ -43,7 +43,8 @@
         "getting-started/adding-columns",
         "getting-started/adding-data-validations",
         "getting-started/adding-data-transformations",
-        "getting-started/embedding"
+        "getting-started/embedding",
+        "getting-started/sessions"
       ]
     },
     {
@@ -91,7 +92,7 @@
       "group": "JS Implementations",
       "pages": [
         "js-implementations/angular-csv-importer",
-        "js-implementations/react.js-csv-importer",
+        "js-implementations/react-csv-importer",
         "js-implementations/vue.js-csv-importer"
       ]
     },
@@ -104,10 +105,22 @@
       "pages": ["apis/authentication", "apis/pagination"]
     },
     {
-      "group": "Resources",
+      "group": "Imports",
       "pages": [
         "apis/resources/imports/list-imports",
+        "apis/resources/imports/get-import"
+      ]
+    },
+    {
+      "group": "Import Records",
+      "pages": [
         "apis/resources/records/import-records"
+      ]
+    },
+    {
+      "group": "Sessions",
+      "pages": [
+        "apis/resources/import-session"
       ]
     }
   ],
