@@ -201,7 +201,7 @@ paths:
         '401':
           description: unauthorized
 
-  "/api/v1/imports/{id}":
+  "/api/v1/imports/{import_slug}":
     get:
       summary: Retrieves a specific import
       tags:
@@ -210,7 +210,7 @@ paths:
       security:
         - bearer: []
       parameters:
-        - name: id
+        - name: import_slug
           in: path
           required: true
           schema:
