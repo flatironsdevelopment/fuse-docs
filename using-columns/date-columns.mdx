@@ -324,3 +324,58 @@ transformations: [
   },
 ];
 ```
+
+## Date Handling by File Type
+
+### CSV Files
+
+When importing CSV files, Fuse handles dates in a straightforward manner:
+
+- Dates are read directly as text strings
+- Fuse importer uses your date column's pattern as a hint to parse and transform dates
+- No locale-specific formatting is applied during preview or processing
+
+### Excel Files (.xls/.xlsx)
+
+Excel files require special handling due to their native date storage format. Excel can store dates in cells as date, datetime, or time types. This means that the way dates are stored internally in Excel may differ from how they are displayed, special care must be taken to correctly interpret and process these values during import:
+
+1. **Fuse Importer's First Step Preview**: 
+   - For any Excel cells containing date, datetime, or time values, Fuse first converts them to raw date values
+   - These raw date values are then formatted according to your operating system's locale/region settings
+   - The same Excel file may result in different date formats being displayed depending on the user's region. For example:  
+      - US: "12/31/2023"  
+      - Europe: "31/12/2023"  
+
+2. **Fuse Importer's Processing Stage**:
+   - In this stage, the text format of dates, already extracted from Excel's native format during the first step, is used for further processing.
+   - Similar to date processing based on CSV files, text date values are parsed using your importer's date pattern as a hint and later transformed to the format specified by the importer date column pattern.
+
+### Example: Excel Import Process
+
+Take an Excel file with the date "January 15, 2023":
+
+1. Preview stage appearance:
+   - US locale: "1/15/2023"
+   - UK locale: "15/1/2023"
+
+2. Parsing stage:
+   - The date is parsed according to the importer's date pattern, converting it to raw date values for further processing.
+
+3. Processing stage (with pattern "yyyy-MM-dd"):
+   - Final output: "2023-01-15"
+
+### Two-Digit Year Rules
+
+For both CSV and Excel files, Fuse applies these rules when processing two-digit years:
+
+- Years 00-49 → 2000-2049
+- Years 50-99 → 1950-1999
+- Example: "23" becomes "2023", "50" becomes "1950"
+
+### Best Practices
+
+To ensure consistent results across file types and regions:
+- Use four-digit years in your data files
+- Test your setup with sample files, especially when working with two-digit years
+- Be cautious of uploading data with ambiguous dates, such as "01/02/03" or "04/05/06", as it can lead to incorrect parsing and data inconsistencies
+- Consider using date patterns that reduce ambiguity, such as "yyyy-MM-dd" or "dd-MMMM-yyyy". For example, "2023-01-15" or "15-January-2023" are less likely to be misinterpreted compared to "01/02/03".
