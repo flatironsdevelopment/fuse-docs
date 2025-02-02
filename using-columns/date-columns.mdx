@@ -345,8 +345,7 @@ Excel files require special handling due to their native date storage format. Ex
    - The same Excel file may result in different date formats being displayed in the preview stage depending on the user's region. For example the same date "December 31, 2023" may look like this in the preview stage for US and Europe:
       - US: "12/31/2023, 00:00:44"  
       - Europe: "31/12/2023, 00:00:44"  
-   - Excel uses a unique numbering system to store dates internally, where each date is represented as a count of days since January 1, 1900 (for more details, see [Microsoft's documentation on Excel date systems](https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487)). Fuse converts these numerical values into familiar date formats during import
-     Here's how Fuse handles Excel's internal date representation versus what users see:
+   - Excel uses a unique numbering system to store dates internally, where each date is represented as a count of days since January 1, 1900 (for more details, see [Microsoft's documentation on Excel date systems](https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487)). Fuse converts these numerical values into familiar date formats during import. Here's how Fuse handles Excel's internal date representation versus what users see:
      - Excel display: "01/12/2024" (what users see in Excel)
      - Excel raw value: "2024-12-01 00:00:44" (the complete date and time information Excel actually stores)
      - Fuse extracts the complete raw value that Excel stores internally, including any time components that may be hidden by Excel's date formatting options in order to preserve all date-time information for future processing.
