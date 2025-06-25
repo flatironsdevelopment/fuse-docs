@@ -1,0 +1,62 @@
+---
+title: "Custom Theming"
+description: "Customize the appearance of your Fuse Importer with colors and logos."
+---
+
+<Note>
+  Custom theming is available for users with plans that include style customization features.
+</Note>
+
+Customize the Fuse Importer's appearance to match your brand's visual identity using the `setCustomStyles` method. This method **overrides Fuse's default theme**, allowing you to selectively customize specific colors and styles.
+
+<Warning>
+  Using `setCustomStyles` will override any styles configured inside your [Fuse account](https://fuse.flatirons.com/account/importer-style-preferences).
+</Warning>
+
+
+## Basic Usage
+
+```javascript
+const importer = new FuseImporter();
+
+// Override only the colors to customize
+// This will replace styles defined with your Fuse account
+importer.setCustomStyles({
+  colors: {
+    primaryColor: "#3F51B5"  // Only override primary color, keep other defaults
+  },
+  logoURL: "https://yourdomain.com/logo.png"
+});
+
+importer.show();
+```
+
+## Customization Options
+
+### Colors
+
+Override any combination of these color properties. Colors that are not defined will fall back to Fuse's default theme values.
+
+```javascript
+importer.setCustomStyles({
+  colors: {
+    primaryColor: "#3F51B5",      // Primary brand color 
+    secondaryColor: "#FF4081",    // Secondary accent color (buttons, highlights)
+    backgroundColor: "#F5F5F5",   // Main background color
+    borderColor: "#E0E0E0",       // Border and divider colors
+    contentColor: "#FFFFFF"       // background color for selected areas
+  }
+});
+```
+
+**Supported formats:** Hex (`#3F51B5`), RGB (`rgb(63, 81, 181)`), HSL (`hsl(231, 48%, 48%)`), named colors (`blue`)
+
+### Logo
+
+```javascript
+importer.setCustomStyles({
+  logoURL: "https://yourdomain.com/logo.png"
+});
+```
+
+**Requirements:** PNG/JPG format
