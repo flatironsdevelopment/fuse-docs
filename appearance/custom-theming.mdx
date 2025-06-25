@@ -13,7 +13,6 @@ Customize the Fuse Importer's appearance to match your brand's visual identity u
   Using `setCustomStyles` will override any styles configured inside your [Fuse account](https://fuse.flatirons.com/account/importer-style-preferences).
 </Warning>
 
-
 ## Basic Usage
 
 ```javascript
@@ -60,3 +59,15 @@ importer.setCustomStyles({
 ```
 
 **Requirements:** PNG/JPG format
+
+## Troubleshooting
+
+Before applying your custom styles, the Fuse Importer runs a validation check. If any issues are found, the styles will be ignored and you'll see error messages in the browser console starting with:
+**"Error on custom styles validation:"**
+
+**Common validation errors include:**
+
+* **Invalid color format** – Ensure all colors use valid CSS values (e.g., hex, RGB, HSL, or named colors).
+* **Invalid URL format** – Logo URLs must be correctly formatted and valid.
+
+If your custom styles aren’t appearing, open the browser console and look for messages beginning with **"Error on custom styles validation:"** to identify and resolve the issue.
