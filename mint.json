@@ -79,7 +79,7 @@
     },
     {
       "group": "Appearance",
-      "pages": ["appearance/modals", "appearance/white-labeling"]
+      "pages": ["appearance/custom-theming", "appearance/modals", "appearance/white-labeling"]
     },
     {
       "group": "Extending Functionality",
